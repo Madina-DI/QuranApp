@@ -1,0 +1,13 @@
+{
+  "name": "quran-app",
+  "version": "1.0.0",
+  "description": "Аль-Баян — Ежедневный Коран с пословным переводом на русский язык",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx serve ."
+  },
+  "keywords": ["quran", "arabic", "russian", "tajweed", "learning", "pwa"],
+  "author": "Madina",
+  "license": "MIT"
+}
