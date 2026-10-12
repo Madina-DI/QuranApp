@@ -711,3 +711,108 @@ input, select, textarea { font-size: 16px !important; }
   .prayer-next-time { font-size: 1.3rem; }
   .qibla-metrics { gap: 8px; }
 }
+
+/* ---------- Все размеры экранов ---------- */
+.tab-brand { display: none; }
+
+/* Очень узкие телефоны (Galaxy Fold, iPhone SE 1-го поколения) */
+@media (max-width: 340px) {
+  .garden-player-controls { flex-wrap: wrap; justify-content: center; row-gap: 10px; }
+  .garden-play-btn { width: 60px; height: 60px; flex-basis: 60px; }
+  .path-node { width: 56px; height: 56px; margin: -28px 0 0 -28px; }
+  .path-node.current { width: 66px; height: 66px; margin: -33px 0 0 -33px; }
+  .tab-link { font-size: 0.6rem; }
+  .tab-bar { width: calc(100% - 16px); }
+}
+
+/* Телефон в альбомной ориентации: компактная панель вкладок */
+@media (max-height: 500px) and (orientation: landscape) {
+  :root { --tab-h: 52px; }
+  .tab-bar { bottom: 6px; padding: 4px; border-radius: 16px; }
+  .tab-link { flex-direction: row; gap: 6px; }
+  .path-hero { padding-top: 16px; padding-bottom: 14px; }
+  .lesson-header { padding-top: 8px; }
+}
+
+/* Планшеты */
+@media (min-width: 768px) {
+  .app-shell { max-width: 760px; padding-left: 24px; padding-right: 24px; }
+  .path-hero { margin: 0 -24px; padding-left: 28px; padding-right: 28px; }
+  .profile-stats { grid-template-columns: repeat(3, 1fr); }
+  .tab-bar { width: min(560px, calc(100% - 48px)); }
+}
+
+/* Ноутбуки и большие мониторы: боковая панель вместо нижней */
+@media (min-width: 1024px) {
+  :root { --rail-w: 232px; }
+  .tab-bar {
+    left: 0;
+    top: 0;
+    bottom: 0;
+    transform: none;
+    width: var(--rail-w);
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 28px 16px;
+    border-radius: 0;
+    border-width: 0 1px 0 0;
+    box-shadow: none;
+    background: #0E1F18;
+  }
+  .tab-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 12px 28px;
+  }
+  .tab-brand-ar { font-family: var(--font-ar); font-size: 2rem; color: var(--gold-accent); line-height: 1.1; }
+  .tab-brand-ru { font-family: var(--font-heading); font-size: 1.35rem; font-weight: 600; color: var(--text-main); }
+  .tab-link {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 14px;
+    min-height: 48px;
+    padding: 0 14px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+  }
+  .app-shell {
+    max-width: none;
+    margin-left: var(--rail-w);
+    padding: 0 48px 56px;
+  }
+  body.in-lesson .app-shell { margin-left: 0; }
+  .screen { max-width: 1080px; margin: 0 auto; }
+  .path-hero { margin: 0 -48px; padding: 40px 48px 28px; }
+  .path-hero-content { max-width: 1080px; margin: 0 auto; }
+  .path-map { max-width: 640px; margin-left: auto; margin-right: auto; }
+  .lesson-screen { max-width: 780px; }
+  #screen-quran, #screen-listen { max-width: 900px; }
+  .profile-stats { grid-template-columns: repeat(6, 1fr); }
+
+  /* Намаз: время намаза и кибла рядом, обучение — на всю ширину */
+  #screen-namaz {
+    display: none;
+    grid-template-columns: 1.15fr 1fr;
+    grid-template-areas: "head head" "times qibla" "learn learn";
+    gap: 20px;
+    align-items: start;
+  }
+  #screen-namaz.active { display: grid; }
+  #screen-namaz > .screen-header { grid-area: head; padding-bottom: 0; }
+  #screen-namaz > .prayer-card { grid-area: times; margin: 0; }
+  #screen-namaz > .qibla-main-card { grid-area: qibla; margin: 0; }
+  #screen-namaz > .namaz-main-card { grid-area: learn; margin: 0; }
+}
+
+@media (min-width: 1600px) {
+  :root { --rail-w: 260px; }
+  .screen { max-width: 1200px; }
+  .path-hero-content { max-width: 1200px; }
+}
+@media (min-width: 600px) {
+  .learn-player .learn-repeat { flex: 2 1 200px; }
+  .learn-player .audio-controls-right { width: auto; flex: 1 1 100%; }
+}
