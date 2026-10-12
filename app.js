@@ -58,7 +58,9 @@ let state = {
   quizQuestionNum: 1,
   activeTab: 'quiz',
   audioSpeed: 1.0,
-  audioLoop: false,
+  audioRepeat: 1, // сколько раз проиграть аят подряд
+  audioRepeatsLeft: 0,
+  lessonsDone: new Set(readStoredJSON('al_bayan_lessons_done', [])),
   currentQuiz: null
 };
 
@@ -130,6 +132,9 @@ document.addEventListener('DOMContentLoaded', () => {
   updateHeaderStats();
   initHeartGuide();
   initQuranLearn();
+  renderPath();
+  renderProfileStats();
+  initRouter();
 
   // Attach global functions to window for inline onclick handlers
   window.setReaderMode = setReaderMode;
@@ -145,6 +150,10 @@ document.addEventListener('DOMContentLoaded', () => {
   window.closeWordModal = closeWordModal;
   window.playWordAudio = playWordAudio;
   window.markWordLearned = markWordLearned;
+  window.prevWord = prevWord;
+  window.nextWord = nextWord;
+  window.openLesson = openLesson;
+  window.lessonNext = lessonNext;
 
   // Офлайн-режим PWA: sw.js раньше не регистрировался
   if ('serviceWorker' in navigator) {
@@ -177,7 +186,7 @@ function updateHeaderStats() {
   const lessonWordIds = quranData.flatMap(a => a.words.map(w => w.id));
   const learnedCount = lessonWordIds.filter(id => state.learnedWords.has(id)).length;
   const percentage = lessonWordIds.length ? Math.round((learnedCount / lessonWordIds.length) * 100) : 0;
-  elements.vocabMastery.textContent = `${percentage}% слов`;
+  elements.vocabMastery.textContent = `${learnedCount} ${pluralWords(learnedCount)}`;
   if (elements.dictFill) elements.dictFill.style.width = `${percentage}%`;
   if (elements.dictCount) elements.dictCount.textContent = `Слова из уроков: выучено ${learnedCount} из ${lessonWordIds.length}`;
 }
@@ -189,7 +198,7 @@ function renderCurrentAyah() {
   const ayah = quranData[state.currentAyahIndex];
 
   // Update Surah Badge & Audio source
-  elements.surahBadgeText.textContent = `${ayah.id} • ${ayah.surahNameRu}`;
+  elements.surahBadgeText.textContent = `${ayah.surahNameRu}, аят ${ayah.ayahNum}`;
   elements.translationText.textContent = ayah.fullTranslation;
   // Смена аята останавливает воспроизведение: синхронизируем кнопку и скорость
   if (elements.quranAudio.getAttribute('src') !== ayah.audioUrl) {
@@ -324,7 +333,8 @@ function initAudioPlayer() {
 
   audio.addEventListener('ended', () => {
     clearWordHighlights();
-    if (state.audioLoop) {
+    if (state.audioRepeatsLeft > 1) {
+      state.audioRepeatsLeft -= 1;
       audio.currentTime = 0;
       audio.play().catch(() => {});
     }
@@ -342,6 +352,7 @@ function toggleAudioPlay() {
   const audio = elements.quranAudio;
   if (audio.paused) {
     audio.playbackRate = state.audioSpeed;
+    if (audio.currentTime === 0 || audio.ended) state.audioRepeatsLeft = state.audioRepeat;
     audio.play().catch(() => { elements.playIcon.textContent = '▶'; });
   } else {
     audio.pause();
@@ -374,11 +385,30 @@ function cycleAudioSpeed() {
   elements.btnSpeed.textContent = `${state.audioSpeed}x`;
 }
 
+// Повтор аята: 1 → 3 → 5 раз
 function toggleAudioLoop() {
-  state.audioLoop = !state.audioLoop;
-  elements.btnLoop.textContent = state.audioLoop ? '🔁 On' : '🔁 Off';
-  elements.btnLoop.style.borderColor = state.audioLoop ? 'var(--gold-accent)' : 'var(--border-subtle)';
+  const counts = [1, 3, 5];
+  state.audioRepeat = counts[(counts.indexOf(state.audioRepeat) + 1) % counts.length];
+  state.audioRepeatsLeft = state.audioRepeat;
+  document.getElementById('repeatLabel').textContent = state.audioRepeat === 1 ? '1' : `×${state.audioRepeat}`;
+  elements.btnLoop.classList.toggle('active', state.audioRepeat > 1);
+  elements.btnLoop.setAttribute('aria-label', `Повтор аята: ${state.audioRepeat} раз`);
 }
+
+// Переход к предыдущему / следующему слову по таймингам слов
+function jumpWord(direction) {
+  const audio = elements.quranAudio;
+  const words = quranData[state.currentAyahIndex].words;
+  if (!words.length) return;
+  const t = audio.currentTime;
+  let idx = words.findIndex(w => t >= w.audioStart && t < w.audioEnd);
+  if (idx === -1) idx = t >= words[words.length - 1].audioEnd ? words.length : -1;
+  const target = Math.min(words.length - 1, Math.max(0, idx + direction));
+  audio.currentTime = words[target].audioStart;
+  syncWordHighlight(words[target].audioStart + 0.01);
+}
+function prevWord() { jumpWord(-1); }
+function nextWord() { jumpWord(1); }
 
 function seekAudio(e) {
   const track = elements.audioProgressTrack;
@@ -400,13 +430,23 @@ function switchStep(stepNum) {
     if (card) card.classList.toggle('active', i === stepNum);
   }
 
+  for (let i = 1; i <= 4; i++) {
+    const seg = document.getElementById(`step${i}Card`);
+    if (seg) seg.classList.toggle('done', i < stepNum);
+  }
   const stepTitles = [
-    'Шаг 1 из 4: Прослушать & Прочитать',
-    'Шаг 2 из 4: Разбор арабских слов и корней',
-    'Шаг 3 из 4: Квиз для проверки памяти',
-    'Шаг 4 из 4: Таддабур и духовный урок'
+    'Шаг 1 · Слушание',
+    'Шаг 2 · Разбор слов',
+    'Шаг 3 · Квиз',
+    'Шаг 4 · Таддабур'
   ];
   elements.stepCounterText.textContent = stepTitles[stepNum - 1];
+  const lessonScreen = document.getElementById('screen-lesson');
+  if (lessonScreen) lessonScreen.dataset.step = String(stepNum);
+  const lessonCount = document.getElementById('lessonCount');
+  if (lessonCount) lessonCount.textContent = `${stepNum}/4`;
+  const nextBtn = document.getElementById('lessonNextBtn');
+  if (nextBtn) nextBtn.textContent = stepNum === 4 ? 'Завершить урок' : 'Далее';
 
   // Action based on step
   if (stepNum === 1) {
@@ -429,14 +469,181 @@ function switchStep(stepNum) {
 function switchPanelTab(tabName) {
   state.activeTab = tabName;
   
-  document.getElementById('tabQuiz').classList.toggle('active', tabName === 'quiz');
-  document.getElementById('tabTadabbur').classList.toggle('active', tabName === 'tadabbur');
-  document.getElementById('tabDictionary').classList.toggle('active', tabName === 'dictionary');
-
+  // Словарь живёт на экране профиля, урок переключает только квиз и таддабур
+  if (tabName === 'dictionary') { location.hash = '#profile'; return; }
   elements.contentQuiz.style.display = (tabName === 'quiz') ? 'block' : 'none';
   elements.contentTadabbur.style.display = (tabName === 'tadabbur') ? 'block' : 'none';
-  elements.contentDictionary.style.display = (tabName === 'dictionary') ? 'block' : 'none';
 }
+
+// ==========================================
+// Screens & tab bar (hash routing)
+// ==========================================
+const SCREENS = ['path', 'quran', 'listen', 'namaz', 'profile', 'lesson'];
+
+function showScreen(name) {
+  if (!SCREENS.includes(name)) name = 'path';
+  document.querySelectorAll('.screen').forEach(sc => {
+    sc.classList.toggle('active', sc.dataset.screen === name);
+  });
+  document.querySelectorAll('.tab-link').forEach(link => {
+    const on = link.dataset.tab === name;
+    link.classList.toggle('active', on);
+    if (on) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
+  });
+  document.body.classList.toggle('in-lesson', name === 'lesson');
+  if (name !== 'lesson') elements.quranAudio.pause();
+  if (name === 'path') renderPath();
+  if (name === 'profile') { renderProfileStats(); renderDictionary(); updateHeaderStats(); }
+  window.scrollTo(0, 0);
+}
+
+function initRouter() {
+  const route = () => showScreen(location.hash.replace('#', '') || 'path');
+  window.addEventListener('hashchange', route);
+  route();
+}
+
+// ==========================================
+// Path of lessons
+// ==========================================
+const toArabicDigits = (n) => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+
+function saveLessonsDone() {
+  localStorage.setItem('al_bayan_lessons_done', JSON.stringify([...state.lessonsDone]));
+}
+
+function currentLessonIndex() {
+  const idx = quranData.findIndex(a => !state.lessonsDone.has(a.id));
+  return idx === -1 ? quranData.length - 1 : idx;
+}
+
+function renderPath() {
+  const map = document.getElementById('pathMap');
+  if (!map) return;
+  const current = currentLessonIndex();
+  const allDone = quranData.every(a => state.lessonsDone.has(a.id));
+  const cur = quranData[current];
+
+  // Заголовок: сура текущего урока и прогресс по ней
+  const surahAyahs = quranData.filter(a => a.surahId === cur.surahId);
+  const doneInSurah = surahAyahs.filter(a => state.lessonsDone.has(a.id)).length;
+  document.getElementById('pathSurahTitle').textContent = cur.surahNameRu;
+  document.getElementById('pathSurahSub').textContent = `${cur.surahMeaning || ''} · ${doneInSurah} из ${surahAyahs.length} ${pluralAyahs(surahAyahs.length)}`;
+  document.getElementById('pathSurahAr').textContent = cur.surahNameAr;
+  const pct = Math.round((doneInSurah / surahAyahs.length) * 100);
+  document.getElementById('pathProgressFill').style.width = `${pct}%`;
+  document.getElementById('pathProgress').setAttribute('aria-valuenow', String(pct));
+
+  // Извилистая тропа: узлы смещаются по синусоиде
+  const offsets = [50, 72, 80, 62, 38, 22, 30, 52];
+  const rowH = 104;
+  const points = [];
+  let html = '';
+  let y = 40;
+  let lastSurah = null;
+  quranData.forEach((ayah, i) => {
+    if (ayah.surahId !== lastSurah) {
+      html += `<div class="path-surah-label" style="top:${y - 34}px"><span>${ayah.surahNameRu}</span><span class="path-surah-label-ar" lang="ar">${ayah.surahNameAr}</span></div>`;
+      y += 56;
+      lastSurah = ayah.surahId;
+    }
+    const x = offsets[i % offsets.length];
+    points.push([x, y]);
+    const done = state.lessonsDone.has(ayah.id);
+    const isCurrent = i === current && !allDone;
+    const status = done ? 'done' : isCurrent ? 'current' : 'locked';
+    const label = `${ayah.surahNameRu}, аят ${ayah.ayahNum}${done ? ' (пройден)' : isCurrent ? ' (текущий урок)' : ''}`;
+    const inner = done
+      ? '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>'
+      : `<span class="path-node-num" lang="ar">${toArabicDigits(ayah.ayahNum)}</span>`;
+    html += `<button class="path-node ${status}" style="left:${x}%;top:${y}px" onclick="openLesson(${i})" aria-label="${label}"${status === 'locked' ? ' disabled' : ''}>${inner}</button>`;
+    if (isCurrent) {
+      html += `<div class="path-current-card" style="top:${y + 46}px">
+        <span class="path-current-kicker">${ayah.surahNameRu} · аят ${ayah.ayahNum}</span>
+        <span class="path-current-text">${ayah.fullTranslation}</span>
+        <button class="garden-primary-btn" onclick="openLesson(${i})">Начать урок</button>
+      </div>`;
+      y += 150;
+    }
+    y += rowH;
+  });
+
+  const h = y;
+  const d = points.map(([px, py], i) => {
+    if (i === 0) return `M${px} ${py}`;
+    const [qx, qy] = points[i - 1];
+    const my = (qy + py) / 2;
+    return `C${qx} ${my} ${px} ${my} ${px} ${py}`;
+  }).join(' ');
+  const svg = `<svg class="path-trail" viewBox="0 0 100 ${h}" preserveAspectRatio="none" aria-hidden="true" style="height:${h}px">
+    <path d="${d}" fill="none" stroke="#2A4A3B" stroke-width="10" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+    <path d="${d}" fill="none" stroke="#E2C275" stroke-opacity=".35" stroke-width="2" stroke-dasharray="2 10" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+  </svg>`;
+  map.style.height = `${h}px`;
+  map.innerHTML = svg + html + (allDone ? '<p class="path-finished">Все уроки пройдены. Повторяйте любой аят, нажав на него.</p>' : '');
+  // Пройденные узлы можно открыть снова; заблокированные — нет
+  map.querySelectorAll('.path-node.done').forEach(n => n.removeAttribute('disabled'));
+}
+
+function openLesson(index) {
+  state.currentAyahIndex = index;
+  elements.ayahSelect.value = String(index);
+  renderCurrentAyah();
+  initQuiz();
+  loadTadabburNote();
+  switchStep(1);
+  if (location.hash !== '#lesson') location.hash = '#lesson';
+  else showScreen('lesson');
+}
+
+function lessonNext() {
+  if (state.activeStep < 4) {
+    switchStep(state.activeStep + 1);
+    window.scrollTo(0, 0);
+    return;
+  }
+  const ayah = quranData[state.currentAyahIndex];
+  if (elements.userNotes.value.trim()) saveUserNote();
+  state.lessonsDone.add(ayah.id);
+  saveLessonsDone();
+  location.hash = '#path';
+}
+
+// ==========================================
+// Profile
+// ==========================================
+function renderProfileStats() {
+  const box = document.getElementById('profileStats');
+  if (!box) return;
+  const hifz = readStoredJSON('al_bayan_hifz', {});
+  const hifzCount = Object.values(hifz).reduce((sum, v) => {
+    if (Array.isArray(v)) return sum + v.length;
+    if (v && typeof v === 'object') return sum + Object.keys(v).length;
+    return sum + (v ? 1 : 0);
+  }, 0);
+  const duas = readStoredJSON('al_bayan_learned_namaz_duas', []);
+  const duaCount = Array.isArray(duas) ? duas.length : Object.keys(duas || {}).length;
+  const stats = [
+    [state.streakDays, pluralDays(state.streakDays), 'подряд'],
+    [state.lessonsDone.size, 'из ' + quranData.length, 'уроков пройдено'],
+    [state.learnedWords.size, pluralWords(state.learnedWords.size), 'выучено'],
+    [hifzCount, pluralAyahs(hifzCount), 'наизусть'],
+    [duaCount, pluralForm(duaCount, 'молитва', 'молитвы', 'молитв'), 'из тренажёра'],
+    [state.quizScore, 'очков', 'за квизы']
+  ];
+  box.innerHTML = stats.map(([n, unit, label]) =>
+    `<div class="profile-stat"><span class="profile-stat-num">${n}</span><span class="profile-stat-label">${unit} ${label}</span></div>`
+  ).join('');
+}
+
+function pluralForm(n, one, few, many) {
+  const mod10 = n % 10, mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return one;
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few;
+  return many;
+}
+function pluralWords(n) { return pluralForm(n, 'слово', 'слова', 'слов'); }
+function pluralAyahs(n) { return pluralForm(n, 'аят', 'аята', 'аятов'); }
 
 // ==========================================
 // Spaced Repetition Quiz Engine
@@ -475,7 +682,7 @@ function renderQuiz() {
   const q = state.currentQuiz;
 
   elements.quizTargetArabic.textContent = q.targetWord.ar;
-  elements.quizScoreText.textContent = `Очки: ${state.quizScore} 🌟`;
+  elements.quizScoreText.textContent = `Очки: ${state.quizScore}`;
   elements.quizProgressNum.textContent = `Вопрос ${((state.quizQuestionNum - 1) % 3) + 1} из 3`;
   elements.quizFeedback.textContent = '';
   elements.quizOptionsGrid.innerHTML = '';
@@ -498,7 +705,7 @@ function handleQuizOptionClick(btn, selectedText) {
 
   if (isCorrect) {
     btn.classList.add('correct');
-    elements.quizFeedback.textContent = '✨ Отлично! Правильный ответ!';
+    elements.quizFeedback.textContent = 'Отлично! Правильный ответ.';
     elements.quizFeedback.style.color = '#34d399';
     
     state.quizScore += 10;
@@ -516,7 +723,7 @@ function handleQuizOptionClick(btn, selectedText) {
 
   } else {
     btn.classList.add('incorrect');
-    elements.quizFeedback.textContent = `❌ Неверно. Правильный перевод: "${q.correctAnswer}"`;
+    elements.quizFeedback.textContent = `Неверно. Правильный перевод: "${q.correctAnswer}"`;
     elements.quizFeedback.style.color = '#fca5a5';
 
     state.quizQuestionNum += 1;

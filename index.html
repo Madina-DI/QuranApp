@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#07130e">
+  <meta name="theme-color" content="#0B1A14">
   <title>Аль-Баян — Коран, Намаз и Кибла</title>
   
   <!-- PWA Manifest -->
@@ -13,101 +13,91 @@
   <!-- Modern Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=Scheherazade+New:wght@400;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
   
   <!-- App Stylesheet -->
-  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="styles.css?v=8">
+  <link rel="stylesheet" href="garden.css?v=2">
 </head>
 <body>
+<div class="app-shell">
 
-  <!-- Background Glow & Decorative Elements -->
-  <div class="bg-glow top-left"></div>
-  <div class="bg-glow bottom-right"></div>
-
-  <!-- App Header / Top Navigation -->
-  <header class="app-header">
-    <div class="header-container">
-      <div class="brand">
-        <div class="brand-icon">📖</div>
-        <div class="brand-text">
-          <h1 class="brand-name">Аль-Баян <span class="badge-beta">PRO</span></h1>
-          <p class="brand-tagline">Коран • Намаз • Кибла</p>
+  <!-- ===================== ПУТЬ ===================== -->
+  <section class="screen" id="screen-path" data-screen="path">
+    <div class="path-hero">
+      <svg class="garden-pattern" viewBox="0 0 390 300" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
+        <defs>
+          <pattern id="gardenStar" width="56" height="56" patternUnits="userSpaceOnUse">
+            <g fill="none" stroke="#1E3A2D" stroke-width="1">
+              <rect x="14" y="14" width="28" height="28"></rect>
+              <rect x="14" y="14" width="28" height="28" transform="rotate(45 28 28)"></rect>
+              <circle cx="28" cy="28" r="6"></circle>
+            </g>
+          </pattern>
+          <linearGradient id="gardenFade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B1A14" stop-opacity="0"></stop><stop offset="1" stop-color="#0B1A14" stop-opacity="1"></stop></linearGradient>
+        </defs>
+        <rect width="390" height="300" fill="url(#gardenStar)"></rect>
+        <rect width="390" height="300" fill="url(#gardenFade)"></rect>
+      </svg>
+      <div class="path-hero-content">
+        <div class="path-topline">
+          <span class="screen-kicker">Ваш путь</span>
+          <div class="path-pills">
+            <span class="garden-pill" title="Дней подряд"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E2C275" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3.5 2-4.5 0 2 1 3 2 3 0-3-1-5.5 1-8.5z"></path></svg><span id="streakCounter">1 день</span></span>
+            <span class="garden-pill" title="Выучено слов из уроков"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3FB68B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-14 14-14 0 9-6 14-14 14zM5 19l7-7"></path></svg><span id="vocabMastery">0 слов</span></span>
+          </div>
         </div>
-      </div>
-
-      <!-- Ayah Selector -->
-      <div class="ayah-selector-wrapper">
-        <label for="ayahSelect" class="selector-label">Выберите аят:</label>
-        <select id="ayahSelect" class="styled-select"></select>
-      </div>
-
-      <!-- User Stats Badges -->
-      <div class="header-stats">
-        <div class="stat-pill streak-pill" title="Серия дней нерывного обучения">
-          <span class="stat-icon">🔥</span>
-          <span class="stat-val" id="streakCounter">1 день</span>
+        <div class="path-surah">
+          <div>
+            <h1 class="path-surah-title" id="pathSurahTitle">Аль-Фатиха</h1>
+            <span class="path-surah-sub" id="pathSurahSub">Открывающая Книгу</span>
+          </div>
+          <span class="path-surah-ar" dir="rtl" lang="ar" id="pathSurahAr">الفاتحة</span>
         </div>
-        <div class="stat-pill vocab-pill" title="Освоено слов из уроков приложения">
-          <span class="stat-icon">📚</span>
-          <span class="stat-val" id="vocabMastery">0% слов</span>
-        </div>
+        <div class="path-progress" role="progressbar" aria-label="Прогресс по суре" aria-valuemin="0" aria-valuemax="100" id="pathProgress"><div class="path-progress-fill" id="pathProgressFill"></div></div>
       </div>
     </div>
-  </header>
+    <div class="path-map" id="pathMap"></div>
+  </section>
 
-  <!-- Main Container -->
-  <main class="app-main">
-
-    <!-- Daily Habit Banner -->
-    <section class="daily-habit-banner">
-      <div class="habit-header">
-        <h2>⚡ Урок Дня (5 минут)</h2>
-        <span class="step-counter" id="stepCounterText">Шаг 1 из 4: Слушание и Чтение</span>
+  <!-- ===================== УРОК (полноэкранный) ===================== -->
+  <section class="screen lesson-screen" id="screen-lesson" data-screen="lesson" data-step="1">
+    <header class="lesson-header">
+      <a href="#path" class="garden-icon-btn" aria-label="Закрыть урок">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+      </a>
+      <div class="lesson-segments" aria-hidden="true">
+        <button class="lesson-segment" id="step1Card" onclick="switchStep(1)" aria-label="Шаг 1: слушание"></button>
+        <button class="lesson-segment" id="step2Card" onclick="switchStep(2)" aria-label="Шаг 2: разбор слов"></button>
+        <button class="lesson-segment" id="step3Card" onclick="switchStep(3)" aria-label="Шаг 3: квиз"></button>
+        <button class="lesson-segment" id="step4Card" onclick="switchStep(4)" aria-label="Шаг 4: таддабур"></button>
       </div>
-      <div class="habit-steps">
-        <div class="step-card active" id="step1Card" onclick="switchStep(1)">
-          <div class="step-num">1</div>
-          <div class="step-title">🎧 Прослушать</div>
-        </div>
-        <div class="step-card" id="step2Card" onclick="switchStep(2)">
-          <div class="step-num">2</div>
-          <div class="step-title">🔍 Разбор слов</div>
-        </div>
-        <div class="step-card" id="step3Card" onclick="switchStep(3)">
-          <div class="step-num">3</div>
-          <div class="step-title">🃏 Квиз слов</div>
-        </div>
-        <div class="step-card" id="step4Card" onclick="switchStep(4)">
-          <div class="step-num">4</div>
-          <div class="step-title">💡 Таддабур</div>
-        </div>
-      </div>
-    </section>
+      <span class="lesson-count" id="lessonCount">1/4</span>
+    </header>
+    <div class="lesson-titles">
+      <span class="screen-kicker" id="stepCounterText">Шаг 1 · Слушание</span>
+      <span class="lesson-title" id="surahBadgeText">Аль-Фатиха, аят 1</span>
+    </div>
+    <select id="ayahSelect" class="visually-hidden" aria-label="Аят урока" tabindex="-1"></select>
 
-    <!-- SECTION 1: TOP MAIN GRID (READER + QIBLA COMPASS VISIBLE IMMEDIATELY) -->
-    <div class="content-grid main-row-grid">
-
-      <!-- LEFT: Interactive Quran Reader -->
+    <div class="lesson-panel lesson-panel-reader">
       <section class="reader-card card">
         <div class="reader-toolbar">
           <div class="mode-toggles">
             <button class="btn-toggle active" id="modeWordByWord" onclick="setReaderMode('wordByWord')">
-              <span class="icon">💬</span> Пословесный
+              Пословесный
             </button>
             <button class="btn-toggle" id="modeTranslation" onclick="setReaderMode('translation')">
-              <span class="icon">📜</span> Смысловой
+              Смысловой
             </button>
             <button class="btn-toggle active" id="modeTajweed" onclick="toggleTajweedMode()">
-              <span class="icon">🎨</span> Таджвид
+              Таджвид
             </button>
             <button class="btn-toggle" id="modeHifz" onclick="toggleHifzBlindMode()">
-              <span class="icon">👁️</span> Заучивание
+              Заучивание
             </button>
           </div>
 
-          <div class="toolbar-right">
-            <span class="surah-badge" id="surahBadgeText">1:1 • Аль-Фатиха</span>
-          </div>
         </div>
 
         <!-- Arabic Verse & Words Display Area -->
@@ -125,31 +115,240 @@
           <div class="legend-items" id="legendItems"></div>
         </div>
 
-        <!-- Audio Player Bar -->
-        <div class="audio-player-bar">
-          <button class="btn-play-pause" id="btnPlayPause" onclick="toggleAudioPlay()">
-            <span id="playIcon">▶</span>
-          </button>
-          
-          <div class="audio-timeline">
-            <div class="audio-title">
+        <!-- Audio Player: speed, prev/next word, play, repeat ×N -->
+        <div class="garden-player" aria-label="Плеер">
+          <div class="garden-player-info">
+            <div class="garden-reciter-avatar" aria-hidden="true">МА</div>
+            <div class="garden-player-text">
               <span id="reciterName">Мишари Рашид Аль-Афаси</span>
-              <span class="audio-time" id="audioTime">00:00 / 00:06</span>
-            </div>
-            <div class="progress-bar-track" id="audioProgressTrack" onclick="seekAudio(event)">
-              <div class="progress-bar-fill" id="audioProgressFill"></div>
+              <span class="audio-time" id="audioTime">00:00 / 00:00</span>
             </div>
           </div>
-
-          <div class="audio-controls-right">
-            <button class="btn-audio-setting" id="btnSpeed" onclick="cycleAudioSpeed()" title="Скорость">1.0x</button>
-            <button class="btn-audio-setting" id="btnLoop" onclick="toggleAudioLoop()" title="Повтор">🔁 Off</button>
+          <div class="progress-bar-track" id="audioProgressTrack" onclick="seekAudio(event)">
+            <div class="progress-bar-fill" id="audioProgressFill"></div>
+          </div>
+          <div class="garden-player-controls">
+            <button class="garden-pill-btn" id="btnSpeed" onclick="cycleAudioSpeed()" aria-label="Скорость">1x</button>
+            <button class="garden-icon-btn" onclick="prevWord()" aria-label="Предыдущее слово">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 6v12l-9-6zM6 6h2v12H6z"></path></svg>
+            </button>
+            <button class="garden-play-btn" id="btnPlayPause" onclick="toggleAudioPlay()" aria-label="Слушать аят">
+              <span id="playIcon">▶</span>
+            </button>
+            <button class="garden-icon-btn" onclick="nextWord()" aria-label="Следующее слово">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 6v12l9-6zM16 6h2v12h-2z"></path></svg>
+            </button>
+            <button class="garden-pill-btn garden-repeat-btn" id="btnLoop" onclick="toggleAudioLoop()" aria-label="Повтор аята">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 2l3 3-3 3M4 11V9a4 4 0 0 1 4-4h12M7 22l-3-3 3-3M20 13v2a4 4 0 0 1-4 4H4"></path></svg><span id="repeatLabel">1</span>
+            </button>
           </div>
         </div>
       </section>
+    </div>
 
-      <!-- RIGHT: QIBLA COMPASS MODULE (VISIBILE IMMEDIATELY ON HOME PAGE) -->
-      <section class="qibla-main-card card">
+    <div class="lesson-panel lesson-panel-quiz">
+      <div class="tab-content active" id="contentQuiz">
+        <div class="quiz-container">
+          <div class="quiz-header">
+            <span class="quiz-question-num" id="quizProgressNum">Вопрос 1 из 3</span>
+            <span class="quiz-score" id="quizScoreText">Очки: 120 🌟</span>
+          </div>
+
+          <div class="quiz-card-box">
+            <div class="quiz-arabic-target" id="quizTargetArabic">الرَّحْمَٰنِ</div>
+            <div class="quiz-prompt">Что означает это слово из Корана?</div>
+            
+            <div class="quiz-options-grid" id="quizOptionsGrid"></div>
+          </div>
+
+          <div class="quiz-feedback" id="quizFeedback"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson-panel lesson-panel-tadabbur">
+      <!-- TAB 2: TADABBUR -->
+      <div class="tab-content" id="contentTadabbur" style="display: none;">
+        <div class="tadabbur-box">
+          <h3 class="tadabbur-heading">💡 Глубокий смысл & Тафсир</h3>
+          <p class="tadabbur-text" id="tadabburText">
+            Каждое благое дело в жизни мусульманина начинается с Бисмилляхи. Это признание того, что всё создано Творцом и происходит с Его позволения.
+          </p>
+
+          <hr class="divider">
+
+          <div class="journal-section">
+            <label for="userNotes" class="journal-label">Ваши размышления и заметки к аяту:</label>
+            <textarea id="userNotes" class="styled-textarea" placeholder="Запишите свои мысли..."></textarea>
+            <button class="btn-primary" onclick="saveUserNote()">Сохранить заметку</button>
+            <span class="save-status" id="saveStatus"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson-footer">
+      <button class="garden-primary-btn" id="lessonNextBtn" onclick="lessonNext()">Далее</button>
+    </div>
+
+    <!-- Скрытые вкладки старой панели: нужны для совместимости switchPanelTab -->
+    <div hidden>
+      <button id="tabQuiz"></button><button id="tabTadabbur"></button><button id="tabDictionary"></button>
+    </div>
+  </section>
+
+  <!-- ===================== КОРАН ===================== -->
+  <section class="screen" id="screen-quran" data-screen="quran">
+    <section class="learn-main-card card" id="quranLearn">
+      <div class="guide-header">
+        <h2>🎧 Слушать и заучивать Коран</h2>
+        <p class="guide-subtitle">Все 114 сур: арабский текст, транскрипция и перевод. Слушайте аят за аятом, повторяйте, скрывайте слова и проверяйте себя, записывая аят по памяти</p>
+      </div>
+
+      <div class="learn-toolbar margin-top-sm">
+        <select id="learnSurahSelect" class="styled-select learn-surah-select"></select>
+        <div class="learn-range">
+          <label for="learnFrom">Аяты с</label>
+          <input type="number" id="learnFrom" class="learn-num-input" min="1" value="1">
+          <label for="learnTo">по</label>
+          <input type="number" id="learnTo" class="learn-num-input" min="1" value="7">
+        </div>
+      </div>
+
+      <div class="learn-toolbar margin-top-sm">
+        <div class="mode-toggles">
+          <button class="btn-toggle active" id="learnMode_read" onclick="setLearnMode('read')">Чтение</button>
+          <button class="btn-toggle" id="learnMode_hide" onclick="setLearnMode('hide')">Заучивание</button>
+          <button class="btn-toggle" id="learnMode_write" onclick="setLearnMode('write')">Письмо по памяти</button>
+        </div>
+        <div class="learn-view-toggles">
+          <button class="btn-audio-setting active" id="learnBtnTranslit" onclick="toggleLearnTranslit()">Транскрипция</button>
+          <button class="btn-audio-setting active" id="learnBtnTranslation" onclick="toggleLearnTranslation()">Перевод</button>
+        </div>
+      </div>
+
+      <div class="learn-hide-level margin-top-sm" id="learnHideLevelWrap" hidden>
+        <span>Подсказка:</span>
+        <button class="btn-audio-setting active" id="learnHide_1" onclick="setHideLevel(1)">Первая буква</button>
+        <button class="btn-audio-setting" id="learnHide_2" onclick="setHideLevel(2)">Без подсказки</button>
+        <span class="learn-hint">Нажмите на скрытое слово, чтобы проверить себя</span>
+      </div>
+
+      <div class="audio-player-bar learn-player margin-top-sm">
+        <button class="btn-step-nav" onclick="learnPrev()" title="Предыдущий аят">◄</button>
+        <button class="btn-play-pause" onclick="toggleLearnPlay()"><span id="learnPlayIcon">▶</span></button>
+        <button class="btn-step-nav" onclick="learnNext()" title="Следующий аят">►</button>
+        <div class="audio-timeline">
+          <div class="audio-title">
+            <span id="learnNowPlaying">—</span>
+            <span class="audio-time">Мишари Рашид Аль-Афаси</span>
+          </div>
+        </div>
+        <div class="audio-controls-right">
+          <select id="learnRepeat" class="styled-select learn-repeat" title="Сколько раз повторять каждый аят">
+            <option value="1">Каждый аят ×1</option>
+            <option value="3">Каждый аят ×3</option>
+            <option value="5">Каждый аят ×5</option>
+            <option value="10">Каждый аят ×10</option>
+          </select>
+          <button class="btn-audio-setting" id="learnBtnLoop" onclick="toggleLearnLoop()">🔁 Круг: выкл</button>
+          <button class="btn-audio-setting" id="learnBtnSpeed" onclick="cycleLearnSpeed()" title="Скорость">1x</button>
+        </div>
+      </div>
+
+      <div class="learn-progress margin-top-sm" id="learnProgress"></div>
+
+      <div class="learn-ayah-list" id="learnAyahList"></div>
+      <div class="learn-write-box" id="learnWriteBox" hidden></div>
+
+      <p class="guide-note">Арабский текст: мусхаф Медины (риваят Хафс). Транскрипция: Tanzil.net. Перевод смыслов: Эльмир Кулиев. Данные: quran-json, CC BY-SA 4.0.</p>
+    </section>
+  </section>
+
+  <!-- ===================== СЛУШАТЬ ===================== -->
+  <section class="screen" id="screen-listen" data-screen="listen">
+    <section class="guide-main-card card" id="heartGuide">
+      <div class="guide-header">
+        <div>
+          <h2>💚 Коран отвечает</h2>
+          <p class="guide-subtitle">Задайте вопрос или опишите, что у вас на сердце, и мы подскажем суры, в которых вы найдёте ответ, утешение и покой</p>
+        </div>
+      </div>
+
+      <div class="guide-ask-row margin-top-sm">
+        <textarea id="guideQueryInput" class="styled-textarea guide-query" rows="2" placeholder="Например: мне тревожно перед экзаменом, я потеряла близкого человека, хочу успокоиться перед сном…"></textarea>
+        <button class="btn-primary guide-ask-btn" onclick="askQuran()">🔍 Найти ответ</button>
+      </div>
+
+      <div class="guide-chips-label">Или выберите своё состояние:</div>
+      <div class="guide-chips" id="guideFeelingChips"></div>
+
+      <div class="guide-intro" id="guideResultIntro"></div>
+      <div class="guide-results" id="guideResults"></div>
+
+      <!-- Relaxation player -->
+      <div class="guide-player" id="guidePlayer" hidden>
+        <button class="btn-play-pause" onclick="toggleGuidePlay()"><span id="guidePlayerIcon">▶</span></button>
+        <div class="audio-timeline">
+          <div class="audio-title">
+            <span id="guidePlayerTitle">—</span>
+            <span class="audio-time" id="guidePlayerTime">00:00 / 00:00</span>
+          </div>
+          <div class="progress-bar-track" id="guidePlayerTrack" onclick="seekGuideAudio(event)">
+            <div class="progress-bar-fill" id="guidePlayerFill"></div>
+          </div>
+        </div>
+        <div class="audio-controls-right">
+          <button class="btn-audio-setting active" id="guideBtnLoop" onclick="toggleGuideLoop()">🔁 Повтор: вкл</button>
+          <button class="btn-audio-setting" id="guideBtnSleep" onclick="cycleGuideSleep()">🌙 Таймер сна</button>
+        </div>
+      </div>
+
+      <details class="guide-browse">
+        <summary>📖 Все 114 сур: о чём каждая</summary>
+        <input type="search" id="guideBrowseFilter" class="styled-textarea guide-browse-filter" placeholder="Поиск по названию или номеру суры">
+        <div class="guide-browse-list" id="guideBrowseList"></div>
+      </details>
+
+      <p class="guide-note">Описания составлены по общепринятым тафсирам и служат ориентиром. Для глубокого понимания обращайтесь к полному тафсиру и знающим людям.</p>
+    </section>
+  </section>
+
+  <!-- ===================== НАМАЗ И КИБЛА ===================== -->
+  <section class="screen" id="screen-namaz" data-screen="namaz">
+    <header class="screen-header">
+        <span class="screen-kicker">Намаз и Кибла</span>
+        <h1 class="screen-title">Молитва</h1>
+        <p class="screen-sub">Омовение, положения намаза, молитвы и направление на Мекку</p>
+      </header>
+    <section class="namaz-main-card card">
+      <div class="namaz-banner-header">
+        <div>
+          <h2>Обучение намазу и тренажёр молитв</h2>
+          <p class="namaz-subtitle">Пошаговое омовение, порядок намаза и быстрое заучивание обязательных дуа</p>
+        </div>
+
+        <!-- Mode Switcher -->
+        <div class="namaz-mode-switcher">
+          <button class="btn-toggle active" id="btnNamazWudu" onclick="setNamazGuideMode('wudu')">Омовение</button>
+          <button class="btn-toggle" id="btnNamazPrayer" onclick="setNamazGuideMode('prayer')">Порядок намаза</button>
+          <button class="btn-toggle" id="btnNamazTrainer" onclick="setNamazGuideMode('trainer')">Тренажёр молитв</button>
+        </div>
+      </div>
+
+      <!-- Step Progress Indicator -->
+      <div class="namaz-step-indicator margin-top-sm">
+        <button class="btn-step-nav" onclick="prevNamazStep()">◄ Назад</button>
+        <span class="namaz-step-text" id="namazStepText">Шаг 1 из 6</span>
+        <button class="btn-step-nav highlight" onclick="nextNamazStep()">Вперед ►</button>
+      </div>
+
+      <!-- Step Card -->
+      <div class="namaz-step-card margin-top-sm" id="namazStepCard">
+        <!-- Populated dynamically via JS -->
+      </div>
+    </section>
+    <section class="qibla-main-card card margin-top-lg">
         <div class="qibla-header text-center">
           <h3>🧭 Направление на Мекку (Кибла)</h3>
           <p class="qibla-subtitle">Авто-GPS определение или выбор города</p>
@@ -198,199 +397,19 @@
           </div>
         </div>
       </section>
+  </section>
 
-    </div>
-
-    <!-- SECTION: QURAN ANSWERS THE HEART (ASK A QUESTION / FEELING → SURAHS + RELAXING AUDIO) -->
-    <section class="guide-main-card card margin-top-lg" id="heartGuide">
-      <div class="guide-header">
-        <div>
-          <h2>💚 Коран отвечает</h2>
-          <p class="guide-subtitle">Задайте вопрос или опишите, что у вас на сердце, и мы подскажем суры, в которых вы найдёте ответ, утешение и покой</p>
-        </div>
-      </div>
-
-      <div class="guide-ask-row margin-top-sm">
-        <textarea id="guideQueryInput" class="styled-textarea guide-query" rows="2" placeholder="Например: мне тревожно перед экзаменом, я потеряла близкого человека, хочу успокоиться перед сном…"></textarea>
-        <button class="btn-primary guide-ask-btn" onclick="askQuran()">🔍 Найти ответ</button>
-      </div>
-
-      <div class="guide-chips-label">Или выберите своё состояние:</div>
-      <div class="guide-chips" id="guideFeelingChips"></div>
-
-      <div class="guide-intro" id="guideResultIntro"></div>
-      <div class="guide-results" id="guideResults"></div>
-
-      <!-- Relaxation player -->
-      <div class="guide-player" id="guidePlayer" hidden>
-        <button class="btn-play-pause" onclick="toggleGuidePlay()"><span id="guidePlayerIcon">▶</span></button>
-        <div class="audio-timeline">
-          <div class="audio-title">
-            <span id="guidePlayerTitle">—</span>
-            <span class="audio-time" id="guidePlayerTime">00:00 / 00:00</span>
-          </div>
-          <div class="progress-bar-track" id="guidePlayerTrack" onclick="seekGuideAudio(event)">
-            <div class="progress-bar-fill" id="guidePlayerFill"></div>
-          </div>
-        </div>
-        <div class="audio-controls-right">
-          <button class="btn-audio-setting active" id="guideBtnLoop" onclick="toggleGuideLoop()">🔁 Повтор: вкл</button>
-          <button class="btn-audio-setting" id="guideBtnSleep" onclick="cycleGuideSleep()">🌙 Таймер сна</button>
-        </div>
-      </div>
-
-      <details class="guide-browse">
-        <summary>📖 Все 114 сур: о чём каждая</summary>
-        <input type="search" id="guideBrowseFilter" class="styled-textarea guide-browse-filter" placeholder="Поиск по названию или номеру суры">
-        <div class="guide-browse-list" id="guideBrowseList"></div>
-      </details>
-
-      <p class="guide-note">Описания составлены по общепринятым тафсирам и служат ориентиром. Для глубокого понимания обращайтесь к полному тафсиру и знающим людям.</p>
-    </section>
-
-    <!-- SECTION: LISTEN & MEMORISE THE WHOLE QURAN (HIFZ) -->
-    <section class="learn-main-card card margin-top-lg" id="quranLearn">
-      <div class="guide-header">
-        <h2>🎧 Слушать и заучивать Коран</h2>
-        <p class="guide-subtitle">Все 114 сур: арабский текст, транскрипция и перевод. Слушайте аят за аятом, повторяйте, скрывайте слова и проверяйте себя, записывая аят по памяти</p>
-      </div>
-
-      <div class="learn-toolbar margin-top-sm">
-        <select id="learnSurahSelect" class="styled-select learn-surah-select"></select>
-        <div class="learn-range">
-          <label for="learnFrom">Аяты с</label>
-          <input type="number" id="learnFrom" class="learn-num-input" min="1" value="1">
-          <label for="learnTo">по</label>
-          <input type="number" id="learnTo" class="learn-num-input" min="1" value="7">
-        </div>
-      </div>
-
-      <div class="learn-toolbar margin-top-sm">
-        <div class="mode-toggles">
-          <button class="btn-toggle active" id="learnMode_read" onclick="setLearnMode('read')">📖 Чтение</button>
-          <button class="btn-toggle" id="learnMode_hide" onclick="setLearnMode('hide')">🙈 Заучивание</button>
-          <button class="btn-toggle" id="learnMode_write" onclick="setLearnMode('write')">✍️ Письмо по памяти</button>
-        </div>
-        <div class="learn-view-toggles">
-          <button class="btn-audio-setting active" id="learnBtnTranslit" onclick="toggleLearnTranslit()">Транскрипция</button>
-          <button class="btn-audio-setting active" id="learnBtnTranslation" onclick="toggleLearnTranslation()">Перевод</button>
-        </div>
-      </div>
-
-      <div class="learn-hide-level margin-top-sm" id="learnHideLevelWrap" hidden>
-        <span>Подсказка:</span>
-        <button class="btn-audio-setting active" id="learnHide_1" onclick="setHideLevel(1)">Первая буква</button>
-        <button class="btn-audio-setting" id="learnHide_2" onclick="setHideLevel(2)">Без подсказки</button>
-        <span class="learn-hint">Нажмите на скрытое слово, чтобы проверить себя</span>
-      </div>
-
-      <div class="audio-player-bar learn-player margin-top-sm">
-        <button class="btn-step-nav" onclick="learnPrev()" title="Предыдущий аят">◄</button>
-        <button class="btn-play-pause" onclick="toggleLearnPlay()"><span id="learnPlayIcon">▶</span></button>
-        <button class="btn-step-nav" onclick="learnNext()" title="Следующий аят">►</button>
-        <div class="audio-timeline">
-          <div class="audio-title">
-            <span id="learnNowPlaying">—</span>
-            <span class="audio-time">Мишари Рашид Аль-Афаси</span>
-          </div>
-        </div>
-        <div class="audio-controls-right">
-          <select id="learnRepeat" class="styled-select learn-repeat" title="Сколько раз повторять каждый аят">
-            <option value="1">Каждый аят ×1</option>
-            <option value="3">Каждый аят ×3</option>
-            <option value="5">Каждый аят ×5</option>
-            <option value="10">Каждый аят ×10</option>
-          </select>
-          <button class="btn-audio-setting" id="learnBtnLoop" onclick="toggleLearnLoop()">🔁 Круг: выкл</button>
-          <button class="btn-audio-setting" id="learnBtnSpeed" onclick="cycleLearnSpeed()" title="Скорость">1x</button>
-        </div>
-      </div>
-
-      <div class="learn-progress margin-top-sm" id="learnProgress"></div>
-
-      <div class="learn-ayah-list" id="learnAyahList"></div>
-      <div class="learn-write-box" id="learnWriteBox" hidden></div>
-
-      <p class="guide-note">Арабский текст: мусхаф Медины (риваят Хафс). Транскрипция: Tanzil.net. Перевод смыслов: Эльмир Кулиев. Данные: quran-json, CC BY-SA 4.0.</p>
-    </section>
-
-    <!-- SECTION 2: NAMAZ & PRAYER MEMORIZER (PROMINENT FULL CARD ON HOME PAGE) -->
-    <section class="namaz-main-card card margin-top-lg">
-      <div class="namaz-banner-header">
-        <div>
-          <h2>🕌 Обучение Намазу и Тренажер Молитв</h2>
-          <p class="namaz-subtitle">Пошаговое омовение, порядок намаза и быстрое заучивание обязательных дуа</p>
-        </div>
-
-        <!-- Mode Switcher -->
-        <div class="namaz-mode-switcher">
-          <button class="btn-toggle active" id="btnNamazWudu" onclick="setNamazGuideMode('wudu')">💧 1. Омовение</button>
-          <button class="btn-toggle" id="btnNamazPrayer" onclick="setNamazGuideMode('prayer')">🤲 2. Порядок Намаза</button>
-          <button class="btn-toggle" id="btnNamazTrainer" onclick="setNamazGuideMode('trainer')">⚡ 3. Тренажер молитв</button>
-        </div>
-      </div>
-
-      <!-- Step Progress Indicator -->
-      <div class="namaz-step-indicator margin-top-sm">
-        <button class="btn-step-nav" onclick="prevNamazStep()">◄ Назад</button>
-        <span class="namaz-step-text" id="namazStepText">Шаг 1 из 6</span>
-        <button class="btn-step-nav highlight" onclick="nextNamazStep()">Вперед ►</button>
-      </div>
-
-      <!-- Step Card -->
-      <div class="namaz-step-card margin-top-sm" id="namazStepCard">
-        <!-- Populated dynamically via JS -->
-      </div>
-    </section>
-
-    <!-- SECTION 3: PRACTICE TABS (QUIZ, TADABBUR, DICTIONARY) -->
-    <section class="practice-main-card card margin-top-lg">
-      <div class="panel-tabs">
-        <button class="tab-btn active" id="tabQuiz" onclick="switchPanelTab('quiz')">🃏 Квиз слов</button>
-        <button class="tab-btn" id="tabTadabbur" onclick="switchPanelTab('tadabbur')">💡 Таддабур</button>
-        <button class="tab-btn" id="tabDictionary" onclick="switchPanelTab('dictionary')">📊 Словарь</button>
-      </div>
-
-      <!-- TAB 1: QUIZ -->
-      <div class="tab-content active" id="contentQuiz">
-        <div class="quiz-container">
-          <div class="quiz-header">
-            <span class="quiz-question-num" id="quizProgressNum">Вопрос 1 из 3</span>
-            <span class="quiz-score" id="quizScoreText">Очки: 120 🌟</span>
-          </div>
-
-          <div class="quiz-card-box">
-            <div class="quiz-arabic-target" id="quizTargetArabic">الرَّحْمَٰنِ</div>
-            <div class="quiz-prompt">Что означает это слово из Корана?</div>
-            
-            <div class="quiz-options-grid" id="quizOptionsGrid"></div>
-          </div>
-
-          <div class="quiz-feedback" id="quizFeedback"></div>
-        </div>
-      </div>
-
-      <!-- TAB 2: TADABBUR -->
-      <div class="tab-content" id="contentTadabbur" style="display: none;">
-        <div class="tadabbur-box">
-          <h3 class="tadabbur-heading">💡 Глубокий смысл & Тафсир</h3>
-          <p class="tadabbur-text" id="tadabburText">
-            Каждое благое дело в жизни мусульманина начинается с Бисмилляхи. Это признание того, что всё создано Творцом и происходит с Его позволения.
-          </p>
-
-          <hr class="divider">
-
-          <div class="journal-section">
-            <label for="userNotes" class="journal-label">📝 Ваши размышления и заметки к аяту:</label>
-            <textarea id="userNotes" class="styled-textarea" placeholder="Запишите свои мысли..."></textarea>
-            <button class="btn-primary" onclick="saveUserNote()">Сохранить заметку</button>
-            <span class="save-status" id="saveStatus"></span>
-          </div>
-        </div>
-      </div>
-
+  <!-- ===================== ПРОФИЛЬ ===================== -->
+  <section class="screen" id="screen-profile" data-screen="profile">
+    <header class="screen-header">
+        <span class="screen-kicker">Профиль</span>
+        <h1 class="screen-title">Ваш прогресс</h1>
+        
+      </header>
+    <div class="profile-stats" id="profileStats"></div>
+    <section class="card margin-top-lg">
       <!-- TAB 3: DICTIONARY -->
-      <div class="tab-content" id="contentDictionary" style="display: none;">
+      <div class="tab-content" id="contentDictionary" >
         <div class="dictionary-box">
           <div class="dict-summary">
             <h4>Частотный словарь Корана</h4>
@@ -405,8 +424,21 @@
         </div>
       </div>
     </section>
+    <section class="card margin-top-lg profile-about">
+      <h2 class="profile-section-title">О приложении</h2>
+      <p>Аль-Баян помогает каждый день понемногу изучать Коран на русском языке: слушать, разбирать слова, проверять себя и размышлять.</p>
+      <p class="guide-note">Арабский текст: мусхаф Медины (риваят Хафс). Перевод смыслов: Эльмир Кулиев. Чтец: Мишари Рашид Аль-Афаси.</p>
+    </section>
+  </section>
 
-  </main>
+  <nav class="tab-bar" aria-label="Основная навигация">
+    <a href="#path" class="tab-link" data-tab="path" aria-label="Путь"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 20c0-4 12-4 12-8S6 8 6 4"></path><circle cx="6" cy="4" r="1.5"></circle><circle cx="6" cy="20" r="1.5"></circle></svg><span class="tab-label">Путь</span></a>
+    <a href="#quran" class="tab-link" data-tab="quran" aria-label="Коран"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 6c-2-1.5-5-2-8-1.5v14c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-14c-3-.5-6 0-8 1.5zM12 6v14"></path></svg><span class="tab-label">Коран</span></a>
+    <a href="#listen" class="tab-link" data-tab="listen" aria-label="Слушать"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2"></path><rect x="3" y="14" width="4" height="6" rx="1.5"></rect><rect x="17" y="14" width="4" height="6" rx="1.5"></rect></svg><span class="tab-label">Слушать</span></a>
+    <a href="#namaz" class="tab-link" data-tab="namaz" aria-label="Намаз и Кибла"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M15.5 8.5l-2 5-5 2 2-5z"></path></svg><span class="tab-label">Намаз</span></a>
+    <a href="#profile" class="tab-link" data-tab="profile" aria-label="Профиль"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg><span class="tab-label">Профиль</span></a>
+  </nav>
+</div>
 
   <!-- Word Analysis Drawer / Modal -->
   <div class="modal-overlay" id="wordModalOverlay" onclick="closeWordModal(event)">
@@ -444,13 +476,12 @@
       </div>
     </div>
   </div>
-
   <!-- Audio Element -->
   <audio id="quranAudio" preload="auto"></audio>
   <audio id="guideAudio" preload="none"></audio>
   <audio id="learnAudio" preload="none"></audio>
 
   <!-- Main JavaScript App Entry -->
-  <script type="module" src="app.js?v=7"></script>
+  <script type="module" src="app.js?v=9"></script>
 </body>
 </html>
