@@ -235,6 +235,28 @@ function formatCountdown(ms) {
   return `через ${h} ч ${m} мин`;
 }
 
+// Краткая сводка для боковой колонки на широких экранах
+export function getPrayerSummary() {
+  const loc = ps.location;
+  if (!loc) return null;
+  const now = new Date();
+  const times = getPrayerTimes(localDateParts(now, loc.tz), loc, ps.method, ps.asr);
+  const order = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+  let key = order.find(k => times[k] && times[k] > now);
+  let time = key ? times[key] : null;
+  if (!key) {
+    key = 'fajr';
+    time = getPrayerTimes(localDateParts(new Date(now.getTime() + 24 * 3600000), loc.tz), loc, ps.method, ps.asr).fajr;
+  }
+  const names = Object.fromEntries(PRAYER_NAMES);
+  return {
+    location: loc,
+    name: names[key],
+    time: formatTime(time, loc.tz),
+    left: time ? formatCountdown(time - now) : ''
+  };
+}
+
 export function renderPrayerTimes() {
   const loc = ps.location;
   if (!loc || !$('prayerList')) return;
