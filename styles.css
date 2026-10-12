@@ -1640,9 +1640,10 @@ body {
   font-weight: 600;
 }
 
-.guide-listen-btn {
+.guide-card-actions {
   margin-top: auto;
-  flex: none;
+  display: flex;
+  gap: 8px;
 }
 
 .guide-player {
@@ -1765,5 +1766,278 @@ body {
 
   .guide-player .btn-audio-setting {
     flex: 1;
+  }
+}
+
+/* ==========================================================================
+   «СЛУШАТЬ И ЗАУЧИВАТЬ» — FULL QURAN READER & HIFZ TRAINER
+   ========================================================================== */
+.learn-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.learn-surah-select {
+  flex: 1;
+  min-width: 240px;
+}
+
+.learn-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.learn-num-input {
+  width: 72px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-glass);
+  color: var(--gold-accent);
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+}
+
+.learn-view-toggles,
+.learn-hide-level {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+}
+
+.learn-hide-level[hidden],
+.learn-write-box[hidden],
+.learn-ayah-list[hidden] {
+  display: none;
+}
+
+.learn-player {
+  margin-top: 12px;
+  gap: 10px;
+}
+
+.learn-repeat {
+  padding: 6px 10px;
+  font-size: 0.75rem;
+}
+
+.learn-progress {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.learn-ayah-list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 640px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.learn-loading {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 20px 0;
+}
+
+.learn-bismillah {
+  font-family: var(--font-ar);
+  font-size: 1.8rem;
+  color: var(--gold-accent);
+  text-align: center;
+  padding: 8px 0;
+}
+
+.learn-ayah {
+  display: flex;
+  gap: 14px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.learn-ayah.current {
+  border-color: var(--gold-accent);
+  background: rgba(212, 175, 55, 0.08);
+}
+
+.learn-ayah.learned {
+  border-left: 3px solid var(--primary-emerald);
+}
+
+.learn-ayah-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.learn-ayah-num {
+  font-size: 0.75rem;
+  color: var(--gold-accent);
+  font-weight: 700;
+}
+
+.learn-icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.learn-icon-btn:hover {
+  border-color: var(--gold-accent);
+  color: var(--gold-accent);
+}
+
+.learn-mark.on {
+  background: var(--primary-emerald);
+  border-color: var(--primary-emerald);
+  color: #000;
+  font-weight: 700;
+}
+
+.learn-ayah-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.learn-ar {
+  font-family: var(--font-ar);
+  font-size: 1.75rem;
+  line-height: 2.1;
+  color: var(--text-ar);
+  text-align: right;
+}
+
+.learn-tr {
+  font-size: 0.9rem;
+  color: var(--primary-emerald);
+  font-style: italic;
+}
+
+.learn-ru {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.learn-word.hidden {
+  cursor: pointer;
+  border-bottom: 2px dashed rgba(212, 175, 55, 0.5);
+  padding: 0 2px;
+}
+
+.learn-word.hidden:hover {
+  border-bottom-color: var(--gold-accent);
+}
+
+.learn-word-mask {
+  color: rgba(212, 175, 55, 0.6);
+  letter-spacing: 1px;
+}
+
+.learn-word.revealed {
+  color: var(--gold-light);
+}
+
+.learn-write-box {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.learn-write-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.learn-write-input {
+  height: 110px;
+  margin-bottom: 0;
+}
+
+.learn-write-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.learn-score {
+  font-weight: 700;
+  color: var(--gold-accent);
+}
+
+.learn-score.good {
+  color: var(--primary-emerald);
+}
+
+.learn-check-word.ok {
+  color: var(--primary-emerald);
+}
+
+.learn-check-word.miss {
+  color: var(--tajweed-madd);
+  text-decoration: underline dotted;
+}
+
+.learn-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+  .learn-range,
+  .learn-surah-select {
+    width: 100%;
+  }
+
+  .learn-player {
+    flex-wrap: wrap;
+  }
+
+  .learn-player .audio-timeline {
+    flex: 1 1 100%;
+    order: -1;
+  }
+
+  .learn-player .audio-time {
+    display: none;
+  }
+
+  .learn-player .audio-controls-right {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .learn-ar {
+    font-size: 1.45rem;
+  }
+
+  .learn-ayah-list {
+    max-height: 520px;
   }
 }

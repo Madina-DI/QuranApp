@@ -1,4 +1,4 @@
-const CACHE_NAME = 'albayan-v4';
+const CACHE_NAME = 'albayan-v5';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -7,6 +7,7 @@ const ASSETS_TO_CACHE = [
   './quranData.js',
   './surahGuide.js',
   './heartGuide.js',
+  './quranLearn.js',
   './manifest.json'
 ];
 
@@ -35,6 +36,17 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
+  // Тексты сур кэшируются при первом открытии, чтобы читать их офлайн
+  if (e.request.url.includes('/data/quran/')) {
+    e.respondWith(
+      caches.match(e.request).then((cached) => cached || fetch(e.request).then((res) => {
+        const copy = res.clone();
+        if (res.ok) caches.open(CACHE_NAME).then((cache) => cache.put(e.request, copy));
+        return res;
+      }))
+    );
+    return;
+  }
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
       if (cachedResponse) {
