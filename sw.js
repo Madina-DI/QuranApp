@@ -1,4 +1,4 @@
-const CACHE_NAME = 'albayan-v5';
+const CACHE_NAME = 'albayan-v6';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -8,6 +8,15 @@ const ASSETS_TO_CACHE = [
   './surahGuide.js',
   './heartGuide.js',
   './quranLearn.js',
+  './namazData.js',
+  './assets/namaz/01-takbir.svg',
+  './assets/namaz/02-qiyam.svg',
+  './assets/namaz/03-ruku.svg',
+  './assets/namaz/04-itidal.svg',
+  './assets/namaz/05-sujud.svg',
+  './assets/namaz/06-julus.svg',
+  './assets/namaz/07-tashahhud.svg',
+  './assets/namaz/08-taslim.svg',
   './manifest.json'
 ];
 

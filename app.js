@@ -1,6 +1,7 @@
 import { quranData, tajweedRulesInfo } from './quranData.js';
 import { initHeartGuide } from './heartGuide.js';
 import { initQuranLearn } from './quranLearn.js';
+import { NAMAZ_RECITATIONS } from './namazData.js';
 
 // ==========================================
 // Storage helpers
@@ -762,7 +763,7 @@ const namazGuideData = {
       translit: "Алла́ху Акбар",
       ru: "Аллах — Велик!",
       desc: "Встаньте лицом к Кибле. Сделайте намерение в сердце. Поднимите ладони до уровня ушей (для мужчин) или плеч (для женщин) и произнесите Такбир.",
-      postureSvg: `<svg viewBox="0 0 100 120" class="posture-svg"><circle cx="50" cy="20" r="12" fill="#d4af37"/><path d="M50 32 v40 M30 35 h40 v-15 M30 20 h0 M70 20 h0 M40 72 v40 M60 72 v40" stroke="#d4af37" stroke-width="4" stroke-linecap="round"/><text x="50" y="118" text-anchor="middle" fill="#9ca3af" font-size="9">Такбир (Стоя)</text></svg>`
+      posture: "01-takbir"
     },
     {
       title: "Шаг 2: Стояние (Кыйам) и чтение Суры Аль-Фатиха",
@@ -770,9 +771,7 @@ const namazGuideData = {
       translit: "Бисмилля́хир-Рахма́нир-Рахи́м ... Аль-Хамду ли-Лля́хи Раббиль-‘Алями́н",
       ru: "С именем Аллаха ... Вся хвала принадлежит Аллаху, Господу миров",
       desc: "Сложите руки на груди или животе (правая поверх левой). Прочтите Суру Аль-Фатиха и затем одну короткую суру.",
-      // Полная сура Аль-Фатиха. У остальных шагов нет записи чтеца, поэтому они озвучиваются синтезом речи
-      audioUrl: "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/1.mp3",
-      postureSvg: `<svg viewBox="0 0 100 120" class="posture-svg"><circle cx="50" cy="20" r="12" fill="#d4af37"/><path d="M50 32 v40 M38 45 h24 M40 72 v40 M60 72 v40" stroke="#d4af37" stroke-width="4" stroke-linecap="round"/><text x="50" y="118" text-anchor="middle" fill="#9ca3af" font-size="9">Кыйам (Чтение)</text></svg>`
+      posture: "02-qiyam"
     },
     {
       title: "Шаг 3: Поясной поклон (Руку')",
@@ -780,7 +779,7 @@ const namazGuideData = {
       translit: "Субха́на Рабби́йаль-‘Азы́м (3 раза)",
       ru: "Пречист мой Великий Господь!",
       desc: "Наклонитесь под углом 90° с прямой спиной, положив ладони на колени. Смотрите в точку суджуда и произнесите дуа 3 раза.",
-      postureSvg: `<svg viewBox="0 0 100 120" class="posture-svg"><circle cx="25" cy="50" r="12" fill="#d4af37"/><path d="M37 50 h40 v40 M77 90 v20 M60 90 v20 M37 50 l25 25" stroke="#d4af37" stroke-width="4" stroke-linecap="round"/><text x="50" y="118" text-anchor="middle" fill="#9ca3af" font-size="9">Руку' (Поклон)</text></svg>`
+      posture: "03-ruku"
     },
     {
       title: "Шаг 4: Выпрямление (И’тидаль)",
@@ -788,7 +787,7 @@ const namazGuideData = {
       translit: "Сами’алла́ху ли-ман хамидах, Раббана́ ва лякаль-хамд",
       ru: "Услышал Аллах того, кто восхвалил Его. Господь наш, Хвала Тебе!",
       desc: "Выпрямитесь полностью ровно стоя, опустив руки вдоль тела.",
-      postureSvg: `<svg viewBox="0 0 100 120" class="posture-svg"><circle cx="50" cy="20" r="12" fill="#d4af37"/><path d="M50 32 v40 M42 35 v30 M58 35 v30 M40 72 v40 M60 72 v40" stroke="#d4af37" stroke-width="4" stroke-linecap="round"/><text x="50" y="118" text-anchor="middle" fill="#9ca3af" font-size="9">И’тидаль (Выпрямление)</text></svg>`
+      posture: "04-itidal"
     },
     {
       title: "Шаг 5: Первый Земной поклон (Суджуд)",
@@ -796,7 +795,7 @@ const namazGuideData = {
       translit: "Субха́на Рабби́йаль-А‘ля́ (3 раза)",
       ru: "Пречист мой Всевышний Господь!",
       desc: "Опуститесь на полу: пола касаются 7 точек (лоб с носом, обе ладони, оба колена и пальцы обеих ног). Произнесите дуа 3 раза.",
-      postureSvg: `<svg viewBox="0 0 100 120" class="posture-svg"><circle cx="20" cy="85" r="10" fill="#d4af37"/><path d="M20 95 h40 l25 -20 M60 95 l25 -20" stroke="#d4af37" stroke-width="4" stroke-linecap="round"/><text x="50" y="118" text-anchor="middle" fill="#9ca3af" font-size="9">Суджуд (Земной поклон)</text></svg>`
+      posture: "05-sujud"
     },
     {
       title: "Шаг 6: Сидение между суджудами и 2-й Суджуд",
@@ -804,7 +803,7 @@ const namazGuideData = {
       translit: "Раббиг-фир ли́, Раббиг-фир ли́",
       ru: "Господь мой, прости меня, прости меня!",
       desc: "Поднимитесь и сядьте ровно на левую ногу, положив ладони на бедра. Произнесите дуа и совершите второй суджуд.",
-      postureSvg: `<svg viewBox="0 0 100 120" class="posture-svg"><circle cx="40" cy="45" r="11" fill="#d4af37"/><path d="M40 56 v25 h30 M40 81 h30" stroke="#d4af37" stroke-width="4" stroke-linecap="round"/><text x="50" y="118" text-anchor="middle" fill="#9ca3af" font-size="9">Джальса (Сидение)</text></svg>`
+      posture: "06-julus"
     },
     {
       title: "Шаг 7: Второй ракаат и Ташаххуд (Ат-Тахият)",
@@ -812,7 +811,7 @@ const namazGuideData = {
       translit: "Ат-Тахиййа́ту ли-Лля́хи вас-салява́ту ват-таййиба́т ...",
       ru: "Приветствия, молитвы и все благие дела принадлежат Аллаху ...",
       desc: "Повторите 2-й ракаат. В конце сядьте для чтения Ат-Тахията и Салавата. При произнесении свидетельства поднимите указательный палец правой руки.",
-      postureSvg: `<svg viewBox="0 0 100 120" class="posture-svg"><circle cx="40" cy="45" r="11" fill="#d4af37"/><path d="M40 56 v25 h30 M50 65 l15 -10" stroke="#d4af37" stroke-width="4" stroke-linecap="round"/><text x="50" y="118" text-anchor="middle" fill="#9ca3af" font-size="9">Ташаххуд (Ат-Тахият)</text></svg>`
+      posture: "07-tashahhud"
     },
     {
       title: "Шаг 8: Приветствие (Салям) — Завершение намаза",
@@ -820,7 +819,7 @@ const namazGuideData = {
       translit: "Ас-Саля́му ‘алейкум ва рахмату-Лла́х",
       ru: "Мир вам и милость Аллаха!",
       desc: "Поверните голову вправо, глядя на свое плечо, и произнесите Салям. Затем поверните голову влево и повторите. Намаз завершен!",
-      postureSvg: `<svg viewBox="0 0 100 120" class="posture-svg"><circle cx="55" cy="45" r="11" fill="#d4af37"/><path d="M40 56 v25 h30" stroke="#d4af37" stroke-width="4" stroke-linecap="round"/><text x="50" y="118" text-anchor="middle" fill="#9ca3af" font-size="9">Салям (Приветствие)</text></svg>`
+      posture: "08-taslim"
     }
   ]
 };
@@ -858,12 +857,20 @@ function renderNamazStep() {
     textElem.textContent = `Шаг ${namazState.stepIndex + 1} из ${steps.length}`;
   }
 
-  if (cardElem) {
-    const svgHtml = step.postureSvg ? `<div class="posture-container">${step.postureSvg}</div>` : '';
-    const audioBtn = step.audioUrl 
-      ? `<button class="btn-modal-action highlight" onclick="playAuthenticAudio('${step.audioUrl}')">🔊 Слушать официальное аудио (Шейх Аль-Афаси)</button>`
-      : `<button class="btn-modal-action" onclick="playNamazPhraseAudio('${step.ar}')">🔊 Озвучить фразы</button>`;
-
+  if (cardElem && step.posture) {
+    // Шаги намаза: картинка положения и все молитвы, которые в нём читаются
+    const recitations = NAMAZ_RECITATIONS.filter(r => r.posture === step.posture);
+    cardElem.innerHTML = `
+      <div class="namaz-step-layout">
+        <div class="namaz-step-details">
+          <div class="namaz-step-title">${step.title}</div>
+          <div class="namaz-desc-box">💡 <b>Порядок движений:</b> ${step.desc}</div>
+          ${recitations.map(recitationHtml).join('')}
+        </div>
+        <img class="posture-img" src="assets/namaz/${step.posture}.svg" alt="${step.title}" width="300" height="260">
+      </div>
+    `;
+  } else if (cardElem) {
     cardElem.innerHTML = `
       <div class="namaz-step-layout">
         <div class="namaz-step-details">
@@ -873,14 +880,46 @@ function renderNamazStep() {
           <div class="namaz-ru-phrase">«${step.ru}»</div>
           <div class="namaz-desc-box">💡 <b>Порядок движений:</b> ${step.desc}</div>
           <div class="namaz-action-row">
-            ${audioBtn}
+            <button class="btn-modal-action" onclick="playNamazPhraseAudio('${step.ar}')">🔊 Озвучить фразы</button>
           </div>
         </div>
-        ${svgHtml}
       </div>
     `;
   }
 }
+
+// Записи чтеца есть только для сур; остальные молитвы озвучиваются синтезом речи
+const RECITATION_AUDIO = {
+  fatiha: 'https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/1.mp3',
+  ikhlas: 'https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/112.mp3'
+};
+
+function recitationHtml(r) {
+  const audioLabel = RECITATION_AUDIO[r.id] ? '🔊 Слушать (Мишари Аль-Афаси)' : '🔊 Озвучить';
+  return `
+    <div class="namaz-recitation">
+      <div class="namaz-recitation-head">
+        <span class="namaz-recitation-title">${r.title}</span>
+        ${r.repeat ? `<span class="namaz-repeat-badge">${r.repeat}</span>` : ''}
+      </div>
+      <div class="namaz-ar-phrase" dir="rtl" lang="ar">${r.ar}</div>
+      <div class="namaz-translit-phrase">${r.tr}</div>
+      <div class="namaz-ru-phrase">«${r.ru}»</div>
+      ${r.note ? `<div class="namaz-note">${r.note}</div>` : ''}
+      <div class="namaz-action-row">
+        <button class="btn-modal-action ${RECITATION_AUDIO[r.id] ? 'highlight' : ''}" onclick="playNamazRecitation('${r.id}')">${audioLabel}</button>
+      </div>
+    </div>`;
+}
+
+function playNamazRecitation(id) {
+  const r = NAMAZ_RECITATIONS.find(x => x.id === id);
+  if (!r) return;
+  if (RECITATION_AUDIO[id]) playAuthenticAudio(RECITATION_AUDIO[id]);
+  else playNamazPhraseAudio(r.ar);
+}
+
+window.playNamazRecitation = playNamazRecitation;
 
 // Отдельный плеер, чтобы не подменять аудио текущего аята в ридере
 const namazAudio = new Audio();
@@ -897,62 +936,22 @@ window.playAuthenticAudio = playAuthenticAudio;
 // ==========================================
 // NAMAZ DUA MEMORIZER TRAINER
 // ==========================================
-const namazDuasForMemorization = [
-  {
-    key: "subhanaka",
-    name: "1. Открывающее дуа «Субханака»",
-    ar: "سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ ، وَتَبَارَكَ اسْمُكَ ، وَتَعَالَىٰ جَدُّكَ ، وَلَا إِلَٰهَ غَيْرُكَ",
-    translit: "Субха́нака-Лло́хумма ва би-хамдика, ва таба́рака-смука, ва та‘а́ля́ джаддука, ва ля́ иля́ха гайрук",
-    ru: "Пречист Ты, о Аллах, и восхваляем! Благословенно имя Твое, превыше всего величие Твое, и нет божества, кроме Тебя!"
-  },
-  {
-    key: "fatiha",
-    name: "2. Сура «Аль-Фатиха» (Обязательная)",
-    ar: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ﴿١﴾ الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ ﴿٢﴾ الرَّحْمَٰنِ الرَّحِيمِ ﴿٣﴾ مَالِكِ يَوْمِ الدِّينِ ﴿٤﴾ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ﴿٥﴾ اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ ﴿٦﴾ صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ ﴿٧﴾",
-    translit: "Бисмилля́хир-Рахма́нир-Рахи́м (1) Аль-Хамду ли-Лля́хи Раббиль-‘Алями́н (2) Ар-Рахма́нир-Рахи́м (3) Ма́лики йаумид-ди́н (4) Иййа́ка на’буду ва иййа́ка наста’и́н (5) Ихдинас-сира́таль-мустаки́м (6) Сира́таллязи́на ан’амта ‘алейхим гайриль-магду́би ‘алейхим ва ляд-далли́н (7)",
-    ru: "С именем Аллаха, Милостивого, Милосердного! Вся хвала принадлежит Аллаху, Господу миров..."
-  },
-  {
-    key: "ruku",
-    name: "3. Дуа Поясного поклона (Руку')",
-    ar: "سُبْحَانَ رَبِّيَ الْعَظِيمِ",
-    translit: "Субха́на Рабби́йаль-‘Азы́м (3 раза)",
-    ru: "Пречист мой Великий Господь!"
-  },
-  {
-    key: "itidal",
-    name: "4. Слова при выпрямлении",
-    ar: "سَمِعَ اللَّهُ لِمَنْ حَمِدَهُ ، رَبَّنَا وَلَكَ الْحَمْدُ",
-    translit: "Сами’алла́ху ли-ман хамидах, Раббана́ ва лякаль-хамд",
-    ru: "Услышал Аллах того, кто восхвалил Его. Господь наш, Хвала Тебе!"
-  },
-  {
-    key: "sudjud",
-    name: "5. Дуа Земного поклона (Суджуд)",
-    ar: "سُبْحَانَ رَبِّيَ الْأَعْلَى",
-    translit: "Субха́на Рабби́йаль-А‘ля́ (3 раза)",
-    ru: "Пречист мой Всевышний Господь!"
-  },
-  {
-    key: "tashahhud",
-    name: "6. Ат-Тахият (Ташаххуд)",
-    ar: "التَّحِيَّاتُ لِلَّهِ وَالصَّلَوَاتُ وَالطَّيِّبَاتُ ، السَّلَامُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ ، السَّلَامُ عَلَيْنَا وَعَلَىٰ عِبَادِ اللَّهِ الصَّالِحِينَ ، أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا اللَّهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ",
-    translit: "Ат-Тахиййа́ту ли-Лля́хи вас-салява́ту ват-таййиба́т, Ас-Саля́му ‘алейка аййухан-Набиййу ва рахмату-Лла́хи ва барака́тух, Ас-Саля́му ‘алейна́ ва ‘аля́ ‘иба́ди-Лля́хис-салихи́н. Ашхаду алля́ иля́ха илля-Лло́ху ва ашхаду анна Мухаммадан ‘абдуху ва расу́люх",
-    ru: "Приветствия, молитвы и все благие дела принадлежат Аллаху. Мир тебе, о Пророк, милость Аллаха и Его благословения! Мир нам и праведным рабам Аллаха. Свидетельствую, что нет божества, кроме Аллаха, и что Мухаммад — Его раб и Посланник."
-  },
-  {
-    key: "salawat",
-    name: "7. Салават Пророку ﷺ",
-    ar: "اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَىٰ إِبْرَاهِيمَ وَعَلَىٰ آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ",
-    translit: "Алла́хумма салли ‘аля́ Мухаммадин ва ‘аля́ а́ли Мухаммад, кама́ салляйта ‘аля́ Ибрахи́ма ва ‘аля́ а́ли Ибрахи́м, иннака Хами́дун Маджи́д",
-    ru: "О Аллах, благослови Мухаммада и род Мухаммада, как благословил Ты Ибрахима и род Ибрахима! Поистине, Ты — Достохвальный, Славнознаменитый!"
-  }
-];
+// Тренажер использует те же молитвы, что и пошаговый гид
+const namazDuasForMemorization = NAMAZ_RECITATIONS.map((r, i) => ({
+  key: r.id,
+  name: `${i + 1}. ${r.title}`,
+  ar: r.ar,
+  translit: r.tr,
+  ru: r.ru
+}));
+
+// Старые ключи выученных молитв из прошлой версии тренажера
+const LEGACY_DUA_KEYS = { subhanaka: 'sana', sudjud: 'sujud' };
 
 let trainerState = {
   currentDuaIndex: 0,
   isRevealed: false,
-  learnedSet: new Set(readStoredJSON('al_bayan_learned_namaz_duas', []))
+  learnedSet: new Set(readStoredJSON('al_bayan_learned_namaz_duas', []).map(k => LEGACY_DUA_KEYS[k] || k))
 };
 
 function renderNamazTrainer() {
@@ -998,7 +997,7 @@ function renderNamazTrainer() {
       </div>
 
       <div class="trainer-tools-row">
-        <button class="btn-modal-action" onclick="playNamazPhraseAudio('${dua.ar}')">🔊 Прослушать произношение</button>
+        <button class="btn-modal-action" onclick="playNamazRecitation('${dua.key}')">🔊 Прослушать произношение</button>
         <button class="btn-learn-toggle" onclick="toggleNamazDuaLearned('${dua.key}')">
           ${isLearned ? '✓ Выучено (Отменить)' : '⭐ Я выучил эту молитву!'}
         </button>
