@@ -203,9 +203,12 @@ function surahCardHtml(s, reasons) {
       ${tags ? `<div class="guide-tags">${tags}</div>` : ''}
       <p class="guide-surah-about"><strong>О чём сура:</strong> ${s.about}</p>
       <p class="guide-surah-gives"><strong>Что вы найдёте:</strong> ${s.gives}</p>
-      <button class="btn-modal-action highlight guide-listen-btn" onclick="toggleSurahListen(${s.n})">
-        ${isPlaying ? '⏸ Пауза' : '🎧 Слушать суру'}
-      </button>
+      <div class="guide-card-actions">
+        <button class="btn-modal-action highlight guide-listen-btn" onclick="toggleSurahListen(${s.n})">
+          ${isPlaying ? '⏸ Пауза' : '🎧 Слушать суру'}
+        </button>
+        <button class="btn-modal-action" onclick="openSurahForLearning(${s.n})">📖 Читать и учить</button>
+      </div>
     </article>`;
 }
 

@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
   
   <!-- App Stylesheet -->
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body>
 
@@ -248,6 +248,72 @@
       <p class="guide-note">Описания составлены по общепринятым тафсирам и служат ориентиром. Для глубокого понимания обращайтесь к полному тафсиру и знающим людям.</p>
     </section>
 
+    <!-- SECTION: LISTEN & MEMORISE THE WHOLE QURAN (HIFZ) -->
+    <section class="learn-main-card card margin-top-lg" id="quranLearn">
+      <div class="guide-header">
+        <h2>🎧 Слушать и заучивать Коран</h2>
+        <p class="guide-subtitle">Все 114 сур: арабский текст, транскрипция и перевод. Слушайте аят за аятом, повторяйте, скрывайте слова и проверяйте себя, записывая аят по памяти</p>
+      </div>
+
+      <div class="learn-toolbar margin-top-sm">
+        <select id="learnSurahSelect" class="styled-select learn-surah-select"></select>
+        <div class="learn-range">
+          <label for="learnFrom">Аяты с</label>
+          <input type="number" id="learnFrom" class="learn-num-input" min="1" value="1">
+          <label for="learnTo">по</label>
+          <input type="number" id="learnTo" class="learn-num-input" min="1" value="7">
+        </div>
+      </div>
+
+      <div class="learn-toolbar margin-top-sm">
+        <div class="mode-toggles">
+          <button class="btn-toggle active" id="learnMode_read" onclick="setLearnMode('read')">📖 Чтение</button>
+          <button class="btn-toggle" id="learnMode_hide" onclick="setLearnMode('hide')">🙈 Заучивание</button>
+          <button class="btn-toggle" id="learnMode_write" onclick="setLearnMode('write')">✍️ Письмо по памяти</button>
+        </div>
+        <div class="learn-view-toggles">
+          <button class="btn-audio-setting active" id="learnBtnTranslit" onclick="toggleLearnTranslit()">Транскрипция</button>
+          <button class="btn-audio-setting active" id="learnBtnTranslation" onclick="toggleLearnTranslation()">Перевод</button>
+        </div>
+      </div>
+
+      <div class="learn-hide-level margin-top-sm" id="learnHideLevelWrap" hidden>
+        <span>Подсказка:</span>
+        <button class="btn-audio-setting active" id="learnHide_1" onclick="setHideLevel(1)">Первая буква</button>
+        <button class="btn-audio-setting" id="learnHide_2" onclick="setHideLevel(2)">Без подсказки</button>
+        <span class="learn-hint">Нажмите на скрытое слово, чтобы проверить себя</span>
+      </div>
+
+      <div class="audio-player-bar learn-player margin-top-sm">
+        <button class="btn-step-nav" onclick="learnPrev()" title="Предыдущий аят">◄</button>
+        <button class="btn-play-pause" onclick="toggleLearnPlay()"><span id="learnPlayIcon">▶</span></button>
+        <button class="btn-step-nav" onclick="learnNext()" title="Следующий аят">►</button>
+        <div class="audio-timeline">
+          <div class="audio-title">
+            <span id="learnNowPlaying">—</span>
+            <span class="audio-time">Мишари Рашид Аль-Афаси</span>
+          </div>
+        </div>
+        <div class="audio-controls-right">
+          <select id="learnRepeat" class="styled-select learn-repeat" title="Сколько раз повторять каждый аят">
+            <option value="1">Каждый аят ×1</option>
+            <option value="3">Каждый аят ×3</option>
+            <option value="5">Каждый аят ×5</option>
+            <option value="10">Каждый аят ×10</option>
+          </select>
+          <button class="btn-audio-setting" id="learnBtnLoop" onclick="toggleLearnLoop()">🔁 Круг: выкл</button>
+          <button class="btn-audio-setting" id="learnBtnSpeed" onclick="cycleLearnSpeed()" title="Скорость">1x</button>
+        </div>
+      </div>
+
+      <div class="learn-progress margin-top-sm" id="learnProgress"></div>
+
+      <div class="learn-ayah-list" id="learnAyahList"></div>
+      <div class="learn-write-box" id="learnWriteBox" hidden></div>
+
+      <p class="guide-note">Арабский текст: мусхаф Медины (риваят Хафс). Транскрипция: Tanzil.net. Перевод смыслов: Эльмир Кулиев. Данные: quran-json, CC BY-SA 4.0.</p>
+    </section>
+
     <!-- SECTION 2: NAMAZ & PRAYER MEMORIZER (PROMINENT FULL CARD ON HOME PAGE) -->
     <section class="namaz-main-card card margin-top-lg">
       <div class="namaz-banner-header">
@@ -382,8 +448,9 @@
   <!-- Audio Element -->
   <audio id="quranAudio" preload="auto"></audio>
   <audio id="guideAudio" preload="none"></audio>
+  <audio id="learnAudio" preload="none"></audio>
 
   <!-- Main JavaScript App Entry -->
-  <script type="module" src="app.js?v=5"></script>
+  <script type="module" src="app.js?v=6"></script>
 </body>
 </html>
