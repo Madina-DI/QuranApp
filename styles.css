@@ -27,6 +27,7 @@
   --tajweed-shamsiyya: #f59e0b;
   --tajweed-qamariyya: #10b981;
   --tajweed-tafkhim: #a855f7;
+  --tajweed-tarqiq: #ec4899;
 
   /* Fonts */
   --font-ar: 'Scheherazade New', 'Amiri', serif;
@@ -453,6 +454,7 @@ body {
 .word-card[data-tajweed="shamsiyya"] .ar-text { color: var(--tajweed-shamsiyya); }
 .word-card[data-tajweed="qamariyya"] .ar-text { color: var(--tajweed-qamariyya); }
 .word-card[data-tajweed="tafkhim"] .ar-text { color: var(--tajweed-tafkhim); }
+.word-card[data-tajweed="tarqiq"] .ar-text { color: var(--tajweed-tarqiq); }
 
 /* Translation Box */
 .translation-box {

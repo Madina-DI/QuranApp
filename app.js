@@ -1,6 +1,45 @@
 import { quranData, tajweedRulesInfo } from './quranData.js';
 
 // ==========================================
+// Storage helpers
+// ==========================================
+function readStoredJSON(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function localDateKey(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+// Серия дней: +1, если вчера был визит; сброс до 1, если был пропуск
+function updateStreak() {
+  const today = localDateKey(new Date());
+  const yesterday = localDateKey(new Date(Date.now() - 24 * 60 * 60 * 1000));
+  const lastVisit = localStorage.getItem('al_bayan_last_visit');
+  let streak = parseInt(localStorage.getItem('al_bayan_streak') || '0', 10) || 0;
+
+  if (lastVisit !== today) {
+    streak = lastVisit === yesterday ? streak + 1 : 1;
+    localStorage.setItem('al_bayan_streak', String(streak));
+    localStorage.setItem('al_bayan_last_visit', today);
+  }
+  return Math.max(streak, 1);
+}
+
+function pluralDays(n) {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return 'день';
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return 'дня';
+  return 'дней';
+}
+
+// ==========================================
 // Application State
 // ==========================================
 let state = {
@@ -10,9 +49,9 @@ let state = {
   isHifzMode: false,
   activeStep: 1,
   selectedWord: null,
-  streakDays: parseInt(localStorage.getItem('al_bayan_streak') || '7', 10),
-  learnedWords: new Set(JSON.parse(localStorage.getItem('al_bayan_learned_words') || '["1-1-1", "1-1-3"]')),
-  quizScore: parseInt(localStorage.getItem('al_bayan_score') || '120', 10),
+  streakDays: updateStreak(),
+  learnedWords: new Set(readStoredJSON('al_bayan_learned_words', [])),
+  quizScore: parseInt(localStorage.getItem('al_bayan_score') || '0', 10) || 0,
   quizQuestionNum: 1,
   activeTab: 'quiz',
   audioSpeed: 1.0,
@@ -39,6 +78,8 @@ const elements = {
   audioProgressFill: document.getElementById('audioProgressFill'),
   btnSpeed: document.getElementById('btnSpeed'),
   btnLoop: document.getElementById('btnLoop'),
+  dictFill: document.getElementById('dictFill'),
+  dictCount: document.getElementById('dictCount'),
   
   // Steps
   stepCounterText: document.getElementById('stepCounterText'),
@@ -99,6 +140,11 @@ document.addEventListener('DOMContentLoaded', () => {
   window.closeWordModal = closeWordModal;
   window.playWordAudio = playWordAudio;
   window.markWordLearned = markWordLearned;
+
+  // Офлайн-режим PWA: sw.js раньше не регистрировался
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
 });
 
 // Populate Ayah Selector Dropdown
@@ -121,12 +167,14 @@ function initAyahSelect() {
 
 // Update Header Badges
 function updateHeaderStats() {
-  elements.streakCounter.textContent = `${state.streakDays} дней`;
-  const totalQuranWordsCount = 77800; // Total in Quran approx
-  const totalUniqueBaseWords = 500;
-  const learnedCount = state.learnedWords.size;
-  const percentage = Math.min(100, Math.round((learnedCount / totalUniqueBaseWords) * 500 + 20)); // Base display
+  elements.streakCounter.textContent = `${state.streakDays} ${pluralDays(state.streakDays)}`;
+  // Доля выученных слов из всех слов в уроках приложения
+  const lessonWordIds = quranData.flatMap(a => a.words.map(w => w.id));
+  const learnedCount = lessonWordIds.filter(id => state.learnedWords.has(id)).length;
+  const percentage = lessonWordIds.length ? Math.round((learnedCount / lessonWordIds.length) * 100) : 0;
   elements.vocabMastery.textContent = `${percentage}% слов`;
+  if (elements.dictFill) elements.dictFill.style.width = `${percentage}%`;
+  if (elements.dictCount) elements.dictCount.textContent = `Слова из уроков: выучено ${learnedCount} из ${lessonWordIds.length}`;
 }
 
 // ==========================================
@@ -138,7 +186,14 @@ function renderCurrentAyah() {
   // Update Surah Badge & Audio source
   elements.surahBadgeText.textContent = `${ayah.id} • ${ayah.surahNameRu}`;
   elements.translationText.textContent = ayah.fullTranslation;
-  elements.quranAudio.src = ayah.audioUrl;
+  // Смена аята останавливает воспроизведение: синхронизируем кнопку и скорость
+  if (elements.quranAudio.getAttribute('src') !== ayah.audioUrl) {
+    elements.quranAudio.pause();
+    elements.quranAudio.src = ayah.audioUrl;
+    elements.quranAudio.playbackRate = state.audioSpeed;
+    elements.playIcon.textContent = '▶';
+    elements.audioProgressFill.style.width = '0%';
+  }
 
   // Clear & render words
   elements.verseDisplayBox.innerHTML = '';
@@ -263,24 +318,28 @@ function initAudioPlayer() {
   });
 
   audio.addEventListener('ended', () => {
-    elements.playIcon.textContent = '▶';
     clearWordHighlights();
     if (state.audioLoop) {
       audio.currentTime = 0;
-      audio.play();
-      elements.playIcon.textContent = '⏸';
+      audio.play().catch(() => {});
     }
   });
+
+  // Иконка следует за реальным состоянием плеера
+  audio.addEventListener('play', () => {
+    elements.playIcon.textContent = '⏸';
+    namazAudio.pause();
+  });
+  audio.addEventListener('pause', () => { elements.playIcon.textContent = '▶'; });
 }
 
 function toggleAudioPlay() {
   const audio = elements.quranAudio;
   if (audio.paused) {
-    audio.play();
-    elements.playIcon.textContent = '⏸';
+    audio.playbackRate = state.audioSpeed;
+    audio.play().catch(() => { elements.playIcon.textContent = '▶'; });
   } else {
     audio.pause();
-    elements.playIcon.textContent = '▶';
   }
 }
 
@@ -320,8 +379,10 @@ function seekAudio(e) {
   const track = elements.audioProgressTrack;
   const rect = track.getBoundingClientRect();
   const clickX = e.clientX - rect.left;
-  const pct = clickX / rect.width;
-  elements.quranAudio.currentTime = pct * elements.quranAudio.duration;
+  const pct = Math.min(1, Math.max(0, clickX / rect.width));
+  const duration = elements.quranAudio.duration;
+  if (!Number.isFinite(duration)) return; // аудио ещё не загружено
+  elements.quranAudio.currentTime = pct * duration;
 }
 
 // ==========================================
@@ -612,6 +673,8 @@ function onQiblaCityChange(cityKey) {
 function requestGPSLocation() {
   if (!navigator.geolocation) {
     alert('Геолокация не поддерживается вашим браузером');
+    const select = document.getElementById('qiblaCitySelect');
+    if (select) select.value = 'moscow';
     onQiblaCityChange('moscow');
     return;
   }
@@ -625,6 +688,8 @@ function requestGPSLocation() {
     },
     () => {
       // Default to Moscow if permission denied
+      const select = document.getElementById('qiblaCitySelect');
+      if (select) select.value = 'moscow';
       onQiblaCityChange('moscow');
     }
   );
@@ -693,7 +758,6 @@ const namazGuideData = {
       translit: "Алла́ху Акбар",
       ru: "Аллах — Велик!",
       desc: "Встаньте лицом к Кибле. Сделайте намерение в сердце. Поднимите ладони до уровня ушей (для мужчин) или плеч (для женщин) и произнесите Такбир.",
-      audioUrl: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3",
       postureSvg: `<svg viewBox="0 0 100 120" class="posture-svg"><circle cx="50" cy="20" r="12" fill="#d4af37"/><path d="M50 32 v40 M30 35 h40 v-15 M30 20 h0 M70 20 h0 M40 72 v40 M60 72 v40" stroke="#d4af37" stroke-width="4" stroke-linecap="round"/><text x="50" y="118" text-anchor="middle" fill="#9ca3af" font-size="9">Такбир (Стоя)</text></svg>`
     },
     {
@@ -702,7 +766,8 @@ const namazGuideData = {
       translit: "Бисмилля́хир-Рахма́нир-Рахи́м ... Аль-Хамду ли-Лля́хи Раббиль-‘Алями́н",
       ru: "С именем Аллаха ... Вся хвала принадлежит Аллаху, Господу миров",
       desc: "Сложите руки на груди или животе (правая поверх левой). Прочтите Суру Аль-Фатиха и затем одну короткую суру.",
-      audioUrl: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/2.mp3",
+      // Полная сура Аль-Фатиха. У остальных шагов нет записи чтеца, поэтому они озвучиваются синтезом речи
+      audioUrl: "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/1.mp3",
       postureSvg: `<svg viewBox="0 0 100 120" class="posture-svg"><circle cx="50" cy="20" r="12" fill="#d4af37"/><path d="M50 32 v40 M38 45 h24 M40 72 v40 M60 72 v40" stroke="#d4af37" stroke-width="4" stroke-linecap="round"/><text x="50" y="118" text-anchor="middle" fill="#9ca3af" font-size="9">Кыйам (Чтение)</text></svg>`
     },
     {
@@ -711,7 +776,6 @@ const namazGuideData = {
       translit: "Субха́на Рабби́йаль-‘Азы́м (3 раза)",
       ru: "Пречист мой Великий Господь!",
       desc: "Наклонитесь под углом 90° с прямой спиной, положив ладони на колени. Смотрите в точку суджуда и произнесите дуа 3 раза.",
-      audioUrl: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3",
       postureSvg: `<svg viewBox="0 0 100 120" class="posture-svg"><circle cx="25" cy="50" r="12" fill="#d4af37"/><path d="M37 50 h40 v40 M77 90 v20 M60 90 v20 M37 50 l25 25" stroke="#d4af37" stroke-width="4" stroke-linecap="round"/><text x="50" y="118" text-anchor="middle" fill="#9ca3af" font-size="9">Руку' (Поклон)</text></svg>`
     },
     {
@@ -720,7 +784,6 @@ const namazGuideData = {
       translit: "Сами’алла́ху ли-ман хамидах, Раббана́ ва лякаль-хамд",
       ru: "Услышал Аллах того, кто восхвалил Его. Господь наш, Хвала Тебе!",
       desc: "Выпрямитесь полностью ровно стоя, опустив руки вдоль тела.",
-      audioUrl: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/2.mp3",
       postureSvg: `<svg viewBox="0 0 100 120" class="posture-svg"><circle cx="50" cy="20" r="12" fill="#d4af37"/><path d="M50 32 v40 M42 35 v30 M58 35 v30 M40 72 v40 M60 72 v40" stroke="#d4af37" stroke-width="4" stroke-linecap="round"/><text x="50" y="118" text-anchor="middle" fill="#9ca3af" font-size="9">И’тидаль (Выпрямление)</text></svg>`
     },
     {
@@ -729,7 +792,6 @@ const namazGuideData = {
       translit: "Субха́на Рабби́йаль-А‘ля́ (3 раза)",
       ru: "Пречист мой Всевышний Господь!",
       desc: "Опуститесь на полу: пола касаются 7 точек (лоб с носом, обе ладони, оба колена и пальцы обеих ног). Произнесите дуа 3 раза.",
-      audioUrl: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/3.mp3",
       postureSvg: `<svg viewBox="0 0 100 120" class="posture-svg"><circle cx="20" cy="85" r="10" fill="#d4af37"/><path d="M20 95 h40 l25 -20 M60 95 l25 -20" stroke="#d4af37" stroke-width="4" stroke-linecap="round"/><text x="50" y="118" text-anchor="middle" fill="#9ca3af" font-size="9">Суджуд (Земной поклон)</text></svg>`
     },
     {
@@ -738,7 +800,6 @@ const namazGuideData = {
       translit: "Раббиг-фир ли́, Раббиг-фир ли́",
       ru: "Господь мой, прости меня, прости меня!",
       desc: "Поднимитесь и сядьте ровно на левую ногу, положив ладони на бедра. Произнесите дуа и совершите второй суджуд.",
-      audioUrl: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/4.mp3",
       postureSvg: `<svg viewBox="0 0 100 120" class="posture-svg"><circle cx="40" cy="45" r="11" fill="#d4af37"/><path d="M40 56 v25 h30 M40 81 h30" stroke="#d4af37" stroke-width="4" stroke-linecap="round"/><text x="50" y="118" text-anchor="middle" fill="#9ca3af" font-size="9">Джальса (Сидение)</text></svg>`
     },
     {
@@ -747,7 +808,6 @@ const namazGuideData = {
       translit: "Ат-Тахиййа́ту ли-Лля́хи вас-салява́ту ват-таййиба́т ...",
       ru: "Приветствия, молитвы и все благие дела принадлежат Аллаху ...",
       desc: "Повторите 2-й ракаат. В конце сядьте для чтения Ат-Тахията и Салавата. При произнесении свидетельства поднимите указательный палец правой руки.",
-      audioUrl: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/5.mp3",
       postureSvg: `<svg viewBox="0 0 100 120" class="posture-svg"><circle cx="40" cy="45" r="11" fill="#d4af37"/><path d="M40 56 v25 h30 M50 65 l15 -10" stroke="#d4af37" stroke-width="4" stroke-linecap="round"/><text x="50" y="118" text-anchor="middle" fill="#9ca3af" font-size="9">Ташаххуд (Ат-Тахият)</text></svg>`
     },
     {
@@ -756,7 +816,6 @@ const namazGuideData = {
       translit: "Ас-Саля́му ‘алейкум ва рахмату-Лла́х",
       ru: "Мир вам и милость Аллаха!",
       desc: "Поверните голову вправо, глядя на свое плечо, и произнесите Салям. Затем поверните голову влево и повторите. Намаз завершен!",
-      audioUrl: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6.mp3",
       postureSvg: `<svg viewBox="0 0 100 120" class="posture-svg"><circle cx="55" cy="45" r="11" fill="#d4af37"/><path d="M40 56 v25 h30" stroke="#d4af37" stroke-width="4" stroke-linecap="round"/><text x="50" y="118" text-anchor="middle" fill="#9ca3af" font-size="9">Салям (Приветствие)</text></svg>`
     }
   ]
@@ -773,6 +832,7 @@ function setNamazGuideMode(mode) {
 
   document.getElementById('btnNamazWudu').classList.toggle('active', mode === 'wudu');
   document.getElementById('btnNamazPrayer').classList.toggle('active', mode === 'prayer');
+  document.getElementById('btnNamazTrainer').classList.toggle('active', mode === 'trainer');
 
   renderNamazStep();
 }
@@ -818,10 +878,14 @@ function renderNamazStep() {
   }
 }
 
+// Отдельный плеер, чтобы не подменять аудио текущего аята в ридере
+const namazAudio = new Audio();
+
 function playAuthenticAudio(url) {
-  const audio = elements.quranAudio || new Audio();
-  audio.src = url;
-  audio.play();
+  elements.quranAudio.pause();
+  if (namazAudio.src !== url) namazAudio.src = url;
+  if (namazAudio.paused) namazAudio.play().catch(() => {});
+  else namazAudio.pause();
 }
 
 window.playAuthenticAudio = playAuthenticAudio;
@@ -884,7 +948,7 @@ const namazDuasForMemorization = [
 let trainerState = {
   currentDuaIndex: 0,
   isRevealed: false,
-  learnedSet: new Set(JSON.parse(localStorage.getItem('al_bayan_learned_namaz_duas') || '[]'))
+  learnedSet: new Set(readStoredJSON('al_bayan_learned_namaz_duas', []))
 };
 
 function renderNamazTrainer() {
@@ -966,6 +1030,13 @@ window.toggleNamazDuaLearned = toggleNamazDuaLearned;
 
 
 function nextNamazStep() {
+  // В тренажере кнопки листают молитвы
+  if (namazState.mode === 'trainer') {
+    if (trainerState.currentDuaIndex < namazDuasForMemorization.length - 1) {
+      onNamazTrainerDuaChange(trainerState.currentDuaIndex + 1);
+    }
+    return;
+  }
   const steps = namazGuideData[namazState.mode];
   if (namazState.stepIndex < steps.length - 1) {
     namazState.stepIndex++;
@@ -974,6 +1045,10 @@ function nextNamazStep() {
 }
 
 function prevNamazStep() {
+  if (namazState.mode === 'trainer') {
+    if (trainerState.currentDuaIndex > 0) onNamazTrainerDuaChange(trainerState.currentDuaIndex - 1);
+    return;
+  }
   if (namazState.stepIndex > 0) {
     namazState.stepIndex--;
     renderNamazStep();
