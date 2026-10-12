@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
   
   <!-- App Stylesheet -->
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body>
 
@@ -201,6 +201,53 @@
 
     </div>
 
+    <!-- SECTION: QURAN ANSWERS THE HEART (ASK A QUESTION / FEELING → SURAHS + RELAXING AUDIO) -->
+    <section class="guide-main-card card margin-top-lg" id="heartGuide">
+      <div class="guide-header">
+        <div>
+          <h2>💚 Коран отвечает</h2>
+          <p class="guide-subtitle">Задайте вопрос или опишите, что у вас на сердце, и мы подскажем суры, в которых вы найдёте ответ, утешение и покой</p>
+        </div>
+      </div>
+
+      <div class="guide-ask-row margin-top-sm">
+        <textarea id="guideQueryInput" class="styled-textarea guide-query" rows="2" placeholder="Например: мне тревожно перед экзаменом, я потеряла близкого человека, хочу успокоиться перед сном…"></textarea>
+        <button class="btn-primary guide-ask-btn" onclick="askQuran()">🔍 Найти ответ</button>
+      </div>
+
+      <div class="guide-chips-label">Или выберите своё состояние:</div>
+      <div class="guide-chips" id="guideFeelingChips"></div>
+
+      <div class="guide-intro" id="guideResultIntro"></div>
+      <div class="guide-results" id="guideResults"></div>
+
+      <!-- Relaxation player -->
+      <div class="guide-player" id="guidePlayer" hidden>
+        <button class="btn-play-pause" onclick="toggleGuidePlay()"><span id="guidePlayerIcon">▶</span></button>
+        <div class="audio-timeline">
+          <div class="audio-title">
+            <span id="guidePlayerTitle">—</span>
+            <span class="audio-time" id="guidePlayerTime">00:00 / 00:00</span>
+          </div>
+          <div class="progress-bar-track" id="guidePlayerTrack" onclick="seekGuideAudio(event)">
+            <div class="progress-bar-fill" id="guidePlayerFill"></div>
+          </div>
+        </div>
+        <div class="audio-controls-right">
+          <button class="btn-audio-setting active" id="guideBtnLoop" onclick="toggleGuideLoop()">🔁 Повтор: вкл</button>
+          <button class="btn-audio-setting" id="guideBtnSleep" onclick="cycleGuideSleep()">🌙 Таймер сна</button>
+        </div>
+      </div>
+
+      <details class="guide-browse">
+        <summary>📖 Все 114 сур: о чём каждая</summary>
+        <input type="search" id="guideBrowseFilter" class="styled-textarea guide-browse-filter" placeholder="Поиск по названию или номеру суры">
+        <div class="guide-browse-list" id="guideBrowseList"></div>
+      </details>
+
+      <p class="guide-note">Описания составлены по общепринятым тафсирам и служат ориентиром. Для глубокого понимания обращайтесь к полному тафсиру и знающим людям.</p>
+    </section>
+
     <!-- SECTION 2: NAMAZ & PRAYER MEMORIZER (PROMINENT FULL CARD ON HOME PAGE) -->
     <section class="namaz-main-card card margin-top-lg">
       <div class="namaz-banner-header">
@@ -334,8 +381,9 @@
 
   <!-- Audio Element -->
   <audio id="quranAudio" preload="auto"></audio>
+  <audio id="guideAudio" preload="none"></audio>
 
   <!-- Main JavaScript App Entry -->
-  <script type="module" src="app.js?v=4"></script>
+  <script type="module" src="app.js?v=5"></script>
 </body>
 </html>
