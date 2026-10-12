@@ -816,3 +816,92 @@ input, select, textarea { font-size: 16px !important; }
   .learn-player .learn-repeat { flex: 2 1 200px; }
   .learn-player .audio-controls-right { width: auto; flex: 1 1 100%; }
 }
+
+/* ---------- UX-аудит: режим чтения, переключатели, доступность ---------- */
+.reader-toolbar { display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
+.garden-segmented {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border-radius: 14px;
+  background: #0F2119;
+  border: 1px solid var(--border-glass);
+}
+.seg-btn {
+  min-height: 44px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.seg-btn:hover { color: var(--text-main); }
+.seg-btn.active { background: var(--gold-accent); color: #0B1A14; font-weight: 700; }
+.reader-switches { display: flex; flex-wrap: wrap; gap: 8px; }
+.switch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-glass);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.switch-dot {
+  width: 30px; height: 18px;
+  border-radius: 999px;
+  background: #1F3A2E;
+  position: relative;
+  flex: 0 0 auto;
+  transition: background 0.2s ease;
+}
+.switch-dot::after {
+  content: "";
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.switch-btn.active { color: var(--text-main); border-color: var(--primary-emerald); }
+.switch-btn.active .switch-dot { background: rgba(63, 182, 139, 0.35); }
+.switch-btn.active .switch-dot::after { transform: translateX(12px); background: var(--primary-emerald); }
+
+/* Фокус с клавиатуры виден везде */
+:focus-visible { outline: 2px solid var(--gold-accent) !important; outline-offset: 2px; }
+
+/* Цели касания не меньше 44px */
+.btn-toggle, .guide-chip, .btn-modal-action, .btn-step-nav, .learn-icon-btn, .btn-close-modal, .namaz-mode-switcher .btn-toggle { min-height: 44px; }
+.learn-icon-btn, .btn-close-modal { min-width: 44px; }
+.progress-bar-track { position: relative; }
+.progress-bar-track::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
+
+/* Мелкий текст не меньше 12px, транскрипция 13px */
+.badge-beta, small { font-size: 12px; }
+.translit-sub { font-size: 13px; }
+
+/* Страница никогда не прокручивается вбок */
+html, body { overflow-x: clip; }
+
+/* Без анимаций для тех, кто их отключил */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* Большие мониторы: крупнее текст и арабский */
+@media (min-width: 1440px) {
+  body { font-size: 17px; }
+  .verse-display-box .ar-text { font-size: clamp(40px, 3vw, 60px); }
+  .learn-ar { font-size: clamp(28px, 2.4vw, 44px); }
+}

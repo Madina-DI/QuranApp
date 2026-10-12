@@ -8,7 +8,7 @@
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230B1A14'/><g fill='none' stroke='%23E2C275' stroke-width='5'><rect x='28' y='28' width='44' height='44'/><rect x='28' y='28' width='44' height='44' transform='rotate(45 50 50)'/></g></svg>">
   
   <!-- Modern Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,7 +17,7 @@
   
   <!-- App Stylesheet -->
   <link rel="stylesheet" href="styles.css?v=8">
-  <link rel="stylesheet" href="garden.css?v=7">
+  <link rel="stylesheet" href="garden.css?v=8">
 </head>
 <body>
 <div class="app-shell">
@@ -43,7 +43,7 @@
         <div class="path-topline">
           <span class="screen-kicker">Ваш путь</span>
           <div class="path-pills">
-            <span class="garden-pill" title="Дней подряд"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E2C275" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3.5 2-4.5 0 2 1 3 2 3 0-3-1-5.5 1-8.5z"></path></svg><span id="streakCounter">1 день</span></span>
+            <span class="garden-pill" title="Дней подряд"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E2C275" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3.5 2-4.5 0 2 1 3 2 3 0-3-1-5.5 1-8.5z"></path></svg><span id="streakCounter"></span></span>
             <span class="garden-pill" title="Выучено слов из уроков"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3FB68B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-14 14-14 0 9-6 14-14 14zM5 19l7-7"></path></svg><span id="vocabMastery">0 слов</span></span>
           </div>
         </div>
@@ -83,21 +83,15 @@
     <div class="lesson-panel lesson-panel-reader">
       <section class="reader-card card">
         <div class="reader-toolbar">
-          <div class="mode-toggles">
-            <button class="btn-toggle active" id="modeWordByWord" onclick="setReaderMode('wordByWord')">
-              Пословесный
-            </button>
-            <button class="btn-toggle" id="modeTranslation" onclick="setReaderMode('translation')">
-              Смысловой
-            </button>
-            <button class="btn-toggle active" id="modeTajweed" onclick="toggleTajweedMode()">
-              Таджвид
-            </button>
-            <button class="btn-toggle" id="modeHifz" onclick="toggleHifzBlindMode()">
-              Заучивание
-            </button>
+          <div class="garden-segmented" role="radiogroup" aria-label="Режим чтения">
+            <button class="seg-btn" id="modeMushaf" role="radio" aria-checked="false" onclick="setReaderMode('mushaf')">Мусхаф</button>
+            <button class="seg-btn active" id="modeWordByWord" role="radio" aria-checked="true" onclick="setReaderMode('wordByWord')">По словам</button>
+            <button class="seg-btn" id="modeTranslation" role="radio" aria-checked="false" onclick="setReaderMode('translation')">Перевод</button>
           </div>
-
+          <div class="reader-switches">
+            <button class="switch-btn active" id="modeTajweed" aria-pressed="true" onclick="toggleTajweedMode()"><span class="switch-dot" aria-hidden="true"></span>Таджвид</button>
+            <button class="switch-btn" id="modeHifz" aria-pressed="false" onclick="toggleHifzBlindMode()"><span class="switch-dot" aria-hidden="true"></span>Хифз: скрыть слова</button>
+          </div>
         </div>
 
         <!-- Arabic Verse & Words Display Area -->
@@ -124,7 +118,7 @@
               <span class="audio-time" id="audioTime">00:00 / 00:00</span>
             </div>
           </div>
-          <div class="progress-bar-track" id="audioProgressTrack" onclick="seekAudio(event)">
+          <div class="progress-bar-track" id="audioProgressTrack" onclick="seekAudio(event)" role="slider" aria-label="Позиция в аяте" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
             <div class="progress-bar-fill" id="audioProgressFill"></div>
           </div>
           <div class="garden-player-controls">
@@ -151,11 +145,11 @@
         <div class="quiz-container">
           <div class="quiz-header">
             <span class="quiz-question-num" id="quizProgressNum">Вопрос 1 из 3</span>
-            <span class="quiz-score" id="quizScoreText">Очки: 120 🌟</span>
+            <span class="quiz-score" id="quizScoreText">Очки: 0</span>
           </div>
 
           <div class="quiz-card-box">
-            <div class="quiz-arabic-target" id="quizTargetArabic">الرَّحْمَٰنِ</div>
+            <div class="quiz-arabic-target" id="quizTargetArabic" lang="ar" dir="rtl">الرَّحْمَٰنِ</div>
             <div class="quiz-prompt">Что означает это слово из Корана?</div>
             
             <div class="quiz-options-grid" id="quizOptionsGrid"></div>
@@ -170,7 +164,7 @@
       <!-- TAB 2: TADABBUR -->
       <div class="tab-content" id="contentTadabbur" style="display: none;">
         <div class="tadabbur-box">
-          <h3 class="tadabbur-heading">💡 Глубокий смысл & Тафсир</h3>
+          <h3 class="tadabbur-heading">Глубокий смысл и тафсир</h3>
           <p class="tadabbur-text" id="tadabburText">
             Каждое благое дело в жизни мусульманина начинается с Бисмилляхи. Это признание того, что всё создано Творцом и происходит с Его позволения.
           </p>
@@ -235,9 +229,9 @@
       </div>
 
       <div class="audio-player-bar learn-player margin-top-sm">
-        <button class="btn-step-nav" onclick="learnPrev()" title="Предыдущий аят">◄</button>
-        <button class="btn-play-pause" onclick="toggleLearnPlay()"><span id="learnPlayIcon">▶</span></button>
-        <button class="btn-step-nav" onclick="learnNext()" title="Следующий аят">►</button>
+        <button class="btn-step-nav" onclick="learnPrev()" title="Предыдущий аят" aria-label="Предыдущий аят">◄</button>
+        <button class="btn-play-pause" onclick="toggleLearnPlay()" aria-label="Слушать или пауза"><span id="learnPlayIcon">▶</span></button>
+        <button class="btn-step-nav" onclick="learnNext()" title="Следующий аят" aria-label="Следующий аят">►</button>
         <div class="audio-timeline">
           <div class="audio-title">
             <span id="learnNowPlaying">—</span>
@@ -251,7 +245,7 @@
             <option value="5">Каждый аят ×5</option>
             <option value="10">Каждый аят ×10</option>
           </select>
-          <button class="btn-audio-setting" id="learnBtnLoop" onclick="toggleLearnLoop()">🔁 Круг: выкл</button>
+          <button class="btn-audio-setting" id="learnBtnLoop" onclick="toggleLearnLoop()">Круг: выкл</button>
           <button class="btn-audio-setting" id="learnBtnSpeed" onclick="cycleLearnSpeed()" title="Скорость">1x</button>
         </div>
       </div>
@@ -288,19 +282,19 @@
 
       <!-- Relaxation player -->
       <div class="guide-player" id="guidePlayer" hidden>
-        <button class="btn-play-pause" onclick="toggleGuidePlay()"><span id="guidePlayerIcon">▶</span></button>
+        <button class="btn-play-pause" onclick="toggleGuidePlay()" aria-label="Слушать или пауза"><span id="guidePlayerIcon">▶</span></button>
         <div class="audio-timeline">
           <div class="audio-title">
             <span id="guidePlayerTitle">—</span>
             <span class="audio-time" id="guidePlayerTime">00:00 / 00:00</span>
           </div>
-          <div class="progress-bar-track" id="guidePlayerTrack" onclick="seekGuideAudio(event)">
+          <div class="progress-bar-track" id="guidePlayerTrack" onclick="seekGuideAudio(event)" role="slider" aria-label="Позиция в суре" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
             <div class="progress-bar-fill" id="guidePlayerFill"></div>
           </div>
         </div>
         <div class="audio-controls-right">
-          <button class="btn-audio-setting active" id="guideBtnLoop" onclick="toggleGuideLoop()">🔁 Повтор: вкл</button>
-          <button class="btn-audio-setting" id="guideBtnSleep" onclick="cycleGuideSleep()">🌙 Таймер сна</button>
+          <button class="btn-audio-setting active" id="guideBtnLoop" onclick="toggleGuideLoop()">Повтор: вкл</button>
+          <button class="btn-audio-setting" id="guideBtnSleep" onclick="cycleGuideSleep()">Таймер сна</button>
         </div>
       </div>
 
@@ -473,36 +467,36 @@
 
   <!-- Word Analysis Drawer / Modal -->
   <div class="modal-overlay" id="wordModalOverlay" onclick="closeWordModal(event)">
-    <div class="word-modal-card" onclick="event.stopPropagation()">
-      <button class="btn-close-modal" onclick="closeWordModal()">✕</button>
+    <div class="word-modal-card" role="dialog" aria-modal="true" aria-labelledby="modalArabic" onclick="event.stopPropagation()">
+      <button class="btn-close-modal" onclick="closeWordModal()" aria-label="Закрыть">✕</button>
       
       <div class="modal-header">
-        <div class="modal-arabic" id="modalArabic">بِسْمِ</div>
+        <div class="modal-arabic" id="modalArabic" lang="ar" dir="rtl">بِسْمِ</div>
         <div class="modal-translit" id="modalTranslit">Бисми</div>
         <div class="modal-ru" id="modalRu">С именем</div>
       </div>
 
       <div class="modal-body">
         <div class="info-row">
-          <span class="info-label">🌱 Корень слова:</span>
+          <span class="info-label">Корень слова:</span>
           <span class="info-val root-val" id="modalRoot">س م و</span>
         </div>
         <div class="info-row">
-          <span class="info-label">📖 Значение корня:</span>
+          <span class="info-label">Значение корня:</span>
           <span class="info-val" id="modalRootRu">Имя, возвышенность</span>
         </div>
         <div class="info-row">
-          <span class="info-label">🏷️ Грамматика:</span>
+          <span class="info-label">Грамматика:</span>
           <span class="info-val" id="modalGrammar">Предлог + Существительное</span>
         </div>
         <div class="info-row">
-          <span class="info-label">📊 Частота в Коране:</span>
+          <span class="info-label">Частота в Коране:</span>
           <span class="info-val badge-freq" id="modalFrequency">3,154 раз</span>
         </div>
 
         <div class="modal-actions">
-          <button class="btn-modal-action" onclick="playWordAudio()">🔊 Произношение</button>
-          <button class="btn-modal-action highlight" onclick="markWordLearned()">⭐ Добавить в словарь</button>
+          <button class="btn-modal-action" onclick="playWordAudio()">Произношение</button>
+          <button class="btn-modal-action highlight" onclick="markWordLearned()">Добавить в словарь</button>
         </div>
       </div>
     </div>
@@ -513,6 +507,6 @@
   <audio id="learnAudio" preload="none"></audio>
 
   <!-- Main JavaScript App Entry -->
-  <script type="module" src="app.js?v=11"></script>
+  <script type="module" src="app.js?v=12"></script>
 </body>
 </html>

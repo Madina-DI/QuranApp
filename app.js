@@ -232,6 +232,8 @@ function renderCurrentAyah() {
     // Main Arabic Text
     const arSpan = document.createElement('span');
     arSpan.className = 'ar-text';
+    arSpan.lang = 'ar';
+    arSpan.dir = 'rtl';
     arSpan.textContent = word.ar;
     wordCard.appendChild(arSpan);
 
@@ -292,24 +294,34 @@ function renderTajweedLegend(ayah) {
 // ==========================================
 // Mode Toggles
 // ==========================================
+// Режим чтения — один выбор: мусхаф (только арабский), по словам, перевод
 function setReaderMode(mode) {
   state.readerMode = mode;
-  document.getElementById('modeWordByWord').classList.toggle('active', mode === 'wordByWord');
-  document.getElementById('modeTranslation').classList.toggle('active', mode === 'translation');
-  
-  elements.translationBox.style.display = (mode === 'translation') ? 'block' : 'block';
+  [['mushaf', 'modeMushaf'], ['wordByWord', 'modeWordByWord'], ['translation', 'modeTranslation']].forEach(([m, id]) => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.classList.toggle('active', m === mode);
+    btn.setAttribute('aria-checked', String(m === mode));
+  });
+  elements.translationBox.style.display = mode === 'mushaf' ? 'none' : 'block';
   renderCurrentAyah();
+}
+
+function setSwitch(id, on) {
+  const btn = document.getElementById(id);
+  btn.classList.toggle('active', on);
+  btn.setAttribute('aria-pressed', String(on));
 }
 
 function toggleTajweedMode() {
   state.isTajweedMode = !state.isTajweedMode;
-  document.getElementById('modeTajweed').classList.toggle('active', state.isTajweedMode);
+  setSwitch('modeTajweed', state.isTajweedMode);
   renderCurrentAyah();
 }
 
 function toggleHifzBlindMode() {
   state.isHifzMode = !state.isHifzMode;
-  document.getElementById('modeHifz').classList.toggle('active', state.isHifzMode);
+  setSwitch('modeHifz', state.isHifzMode);
   renderCurrentAyah();
 }
 
@@ -323,6 +335,7 @@ function initAudioPlayer() {
     if (!audio.duration) return;
     const progressPct = (audio.currentTime / audio.duration) * 100;
     elements.audioProgressFill.style.width = `${progressPct}%`;
+    elements.audioProgressTrack.setAttribute('aria-valuenow', String(Math.round(progressPct)));
 
     const formatSec = (sec) => {
       const m = Math.floor(sec / 60);
@@ -982,7 +995,7 @@ function renderNamazStep() {
       <div class="namaz-step-layout">
         <div class="namaz-step-details">
           <div class="namaz-step-title">${step.title}</div>
-          <div class="namaz-desc-box">💡 <b>Порядок движений:</b> ${step.desc}</div>
+          <div class="namaz-desc-box"><b>Порядок движений:</b> ${step.desc}</div>
           ${recitations.map(recitationHtml).join('')}
         </div>
         <img class="posture-img" src="assets/namaz/${step.posture}.svg" alt="${step.title}" width="300" height="260">
@@ -993,12 +1006,12 @@ function renderNamazStep() {
       <div class="namaz-step-layout">
         <div class="namaz-step-details">
           <div class="namaz-step-title">${step.title}</div>
-          <div class="namaz-ar-phrase">${step.ar}</div>
+          <div class="namaz-ar-phrase" dir="rtl" lang="ar">${step.ar}</div>
           <div class="namaz-translit-phrase">${step.translit}</div>
           <div class="namaz-ru-phrase">«${step.ru}»</div>
-          <div class="namaz-desc-box">💡 <b>Порядок движений:</b> ${step.desc}</div>
+          <div class="namaz-desc-box"><b>Порядок движений:</b> ${step.desc}</div>
           <div class="namaz-action-row">
-            <button class="btn-modal-action" onclick="playNamazPhraseAudio('${step.ar}')">🔊 Озвучить фразы</button>
+            <button class="btn-modal-action" onclick="playNamazPhraseAudio('${step.ar}')">Озвучить фразы</button>
           </div>
         </div>
       </div>
@@ -1013,7 +1026,7 @@ const RECITATION_AUDIO = {
 };
 
 function recitationHtml(r) {
-  const audioLabel = RECITATION_AUDIO[r.id] ? '🔊 Слушать (Мишари Аль-Афаси)' : '🔊 Озвучить';
+  const audioLabel = RECITATION_AUDIO[r.id] ? 'Слушать (Мишари Аль-Афаси)' : 'Озвучить';
   return `
     <div class="namaz-recitation">
       <div class="namaz-recitation-head">
@@ -1100,14 +1113,14 @@ function renderNamazTrainer() {
     <div class="trainer-card">
       <div class="trainer-header-row">
         <div class="trainer-dua-name">${dua.name}</div>
-        <span class="trainer-status-badge ${isLearned ? 'learned' : ''}">${isLearned ? '✓ Выучено наизусть' : '⏳ В процессе'}</span>
+        <span class="trainer-status-badge ${isLearned ? 'learned' : ''}">${isLearned ? '✓ Выучено наизусть' : 'В процессе'}</span>
       </div>
 
-      <div class="trainer-ar-box">${dua.ar}</div>
+      <div class="trainer-ar-box" dir="rtl" lang="ar">${dua.ar}</div>
 
       <!-- Interactive Reveal Box to Test Memory -->
-      <div class="trainer-reveal-box ${trainerState.isRevealed ? '' : 'hidden'}" onclick="toggleTrainerReveal()">
-        <div class="reveal-hint">${trainerState.isRevealed ? '👁️ Нажмите, чтобы скрыть и проверить себя по памяти' : '👁️ Нажмите, чтобы открыть транскрипцию и русский перевод'}</div>
+      <div class="trainer-reveal-box ${trainerState.isRevealed ? '' : 'hidden'}" role="button" tabindex="0" aria-expanded="${trainerState.isRevealed}" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleTrainerReveal()}" onclick="toggleTrainerReveal()">
+        <div class="reveal-hint">${trainerState.isRevealed ? 'Нажмите, чтобы скрыть и проверить себя по памяти' : 'Нажмите, чтобы открыть транскрипцию и русский перевод'}</div>
         <div class="reveal-content">
           <div class="namaz-translit-phrase" style="margin-bottom: 6px;">${dua.translit}</div>
           <div class="namaz-ru-phrase">«${dua.ru}»</div>
@@ -1115,9 +1128,9 @@ function renderNamazTrainer() {
       </div>
 
       <div class="trainer-tools-row">
-        <button class="btn-modal-action" onclick="playNamazRecitation('${dua.key}')">🔊 Прослушать произношение</button>
+        <button class="btn-modal-action" onclick="playNamazRecitation('${dua.key}')">Прослушать произношение</button>
         <button class="btn-learn-toggle" onclick="toggleNamazDuaLearned('${dua.key}')">
-          ${isLearned ? '✓ Выучено (Отменить)' : '⭐ Я выучил эту молитву!'}
+          ${isLearned ? '✓ Выучено (Отменить)' : 'Я выучил(а) эту молитву'}
         </button>
       </div>
     </div>
