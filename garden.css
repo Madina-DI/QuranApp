@@ -644,3 +644,38 @@ body.in-lesson .tab-bar { display: none; }
 .prayer-setting .styled-select { width: 100%; }
 .qibla-location { color: var(--text-muted); font-size: 0.9rem; text-align: center; }
 .qibla-location span { color: var(--text-main); font-weight: 600; }
+
+/* ---------- Кибла ---------- */
+.qibla-main-card { gap: 14px; justify-content: flex-start; }
+.qibla-compass {
+  position: relative;
+  width: min(300px, 100%);
+  margin: 4px auto 0;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transition: box-shadow 0.3s ease;
+}
+.qibla-svg { width: 100%; height: 100%; display: block; }
+.qibla-svg #qiblaDial { transition: transform 0.12s linear; }
+.qibla-compass[data-mode="static"] #qiblaHeadingMark { display: none; }
+.qibla-cardinal { fill: var(--text-muted); font-family: var(--font-sans); font-size: 17px; font-weight: 700; }
+.qibla-north { fill: #E07A6A; }
+.qibla-compass.aligned { box-shadow: 0 0 0 6px rgba(226, 194, 117, 0.25), 0 0 48px rgba(226, 194, 117, 0.45); }
+.qibla-compass.aligned #qiblaHeadingMark { fill: #E2C275; }
+.qibla-hint { text-align: center; color: var(--text-main); font-size: 0.95rem; font-weight: 600; min-height: 1.4em; }
+.qibla-compass.aligned + .qibla-hint { color: var(--gold-accent); }
+.qibla-enable { width: 100%; }
+.qibla-enable[hidden] { display: none; }
+.qibla-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.qibla-metric {
+  background: #0F2119;
+  border: 1px solid var(--border-glass);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.qibla-metric-num { font-size: 1.5rem; font-weight: 700; color: var(--gold-accent); line-height: 1.1; }
+.qibla-metric-label { color: var(--text-muted); font-size: 0.78rem; line-height: 1.3; }
+@media (prefers-reduced-motion: reduce) { .qibla-svg #qiblaDial { transition: none; } }
