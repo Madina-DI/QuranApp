@@ -1,4 +1,5 @@
 import { quranData, tajweedRulesInfo } from './quranData.js';
+import { initHeartGuide } from './heartGuide.js';
 
 // ==========================================
 // Storage helpers
@@ -125,6 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initQuiz();
   renderDictionary();
   updateHeaderStats();
+  initHeartGuide();
 
   // Attach global functions to window for inline onclick handlers
   window.setReaderMode = setReaderMode;
