@@ -2,6 +2,7 @@ import { quranData, tajweedRulesInfo } from './quranData.js';
 import { initHeartGuide } from './heartGuide.js';
 import { initQuranLearn } from './quranLearn.js';
 import { NAMAZ_RECITATIONS } from './namazData.js';
+import { initPrayerTimes, onPrayerScreenShown } from './prayerScreen.js';
 
 // ==========================================
 // Storage helpers
@@ -132,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateHeaderStats();
   initHeartGuide();
   initQuranLearn();
+  initPrayerTimes(updateQiblaForLocation);
   renderPath();
   renderProfileStats();
   initRouter();
@@ -493,6 +495,7 @@ function showScreen(name) {
   document.body.classList.toggle('in-lesson', name === 'lesson');
   if (name !== 'lesson') elements.quranAudio.pause();
   if (name === 'path') renderPath();
+  if (name === 'namaz') onPrayerScreenShown();
   if (name === 'profile') { renderProfileStats(); renderDictionary(); updateHeaderStats(); }
   window.scrollTo(0, 0);
 }
@@ -825,18 +828,6 @@ function markWordLearned() {
 const KAABA_LAT = 21.422487;
 const KAABA_LON = 39.826206;
 
-const CITY_COORDS = {
-  moscow: { lat: 55.7558, lon: 37.6173, name: "Москва" },
-  astana: { lat: 51.1694, lon: 71.4491, name: "Астана" },
-  almaty: { lat: 43.2220, lon: 76.8512, name: "Алматы" },
-  tashkent: { lat: 41.2995, lon: 69.2401, name: "Ташкент" },
-  bishkek: { lat: 42.8746, lon: 74.5698, name: "Бишкек" },
-  kazan: { lat: 55.8304, lon: 49.0661, name: "Казань" },
-  istanbul: { lat: 41.0082, lon: 28.9784, name: "Стамбул" },
-  baku: { lat: 40.4093, lon: 49.8671, name: "Баку" },
-  dubai: { lat: 25.2048, lon: 55.2708, name: "Дубай" }
-};
-
 function calculateQiblaBearing(lat, lon) {
   const phi1 = (lat * Math.PI) / 180;
   const phi2 = (KAABA_LAT * Math.PI) / 180;
@@ -870,49 +861,15 @@ function updateQiblaDisplay(angle, distance) {
   if (distVal) distVal.textContent = `${distance.toLocaleString()} км`;
 }
 
-function onQiblaCityChange(cityKey) {
-  if (cityKey === 'auto') {
-    requestGPSLocation();
-    return;
-  }
-  const city = CITY_COORDS[cityKey];
-  if (!city) return;
-  const angle = calculateQiblaBearing(city.lat, city.lon);
-  const dist = calculateDistanceToKaaba(city.lat, city.lon);
+// Кибла считается для того же места, что и время намаза
+function updateQiblaForLocation(loc) {
+  if (!loc) return;
+  const angle = calculateQiblaBearing(loc.lat, loc.lon);
+  const dist = calculateDistanceToKaaba(loc.lat, loc.lon);
   updateQiblaDisplay(angle, dist);
+  const label = document.getElementById('qiblaLocationName');
+  if (label) label.textContent = loc.name;
 }
-
-function requestGPSLocation() {
-  if (!navigator.geolocation) {
-    alert('Геолокация не поддерживается вашим браузером');
-    const select = document.getElementById('qiblaCitySelect');
-    if (select) select.value = 'moscow';
-    onQiblaCityChange('moscow');
-    return;
-  }
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const lat = pos.coords.latitude;
-      const lon = pos.coords.longitude;
-      const angle = calculateQiblaBearing(lat, lon);
-      const dist = calculateDistanceToKaaba(lat, lon);
-      updateQiblaDisplay(angle, dist);
-    },
-    () => {
-      // Default to Moscow if permission denied
-      const select = document.getElementById('qiblaCitySelect');
-      if (select) select.value = 'moscow';
-      onQiblaCityChange('moscow');
-    }
-  );
-}
-
-// Initial Qibla set
-setTimeout(() => onQiblaCityChange('moscow'), 500);
-
-// Window exports
-window.onQiblaCityChange = onQiblaCityChange;
-window.requestGPSLocation = requestGPSLocation;
 
 // ==========================================
 // NAMAZ & WUDU STEP-BY-STEP DATA & LOGIC
