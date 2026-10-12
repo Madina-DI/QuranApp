@@ -51,6 +51,12 @@ export function initHeartGuide() {
   window.toggleGuideLoop = toggleGuideLoop;
   window.cycleGuideSleep = cycleGuideSleep;
   window.seekGuideAudio = seekGuideAudio;
+  // Перемотка с клавиатуры: стрелки ±5 секунд
+  el.playerTrack?.addEventListener('keydown', (e) => {
+    if (!el.audio.duration || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+    e.preventDefault();
+    el.audio.currentTime = Math.min(el.audio.duration, Math.max(0, el.audio.currentTime + (e.key === 'ArrowRight' ? 5 : -5)));
+  });
 }
 
 // ---------- Matching ----------

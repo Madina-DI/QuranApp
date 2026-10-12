@@ -17,7 +17,7 @@
   
   <!-- App Stylesheet -->
   <link rel="stylesheet" href="styles.css?v=8">
-  <link rel="stylesheet" href="garden.css?v=8">
+  <link rel="stylesheet" href="garden.css?v=9">
 </head>
 <body>
 <div class="app-shell">
@@ -57,7 +57,10 @@
         <div class="path-progress" role="progressbar" aria-label="Прогресс по суре" aria-valuemin="0" aria-valuemax="100" id="pathProgress"><div class="path-progress-fill" id="pathProgressFill"></div></div>
       </div>
     </div>
-    <div class="path-map" id="pathMap"></div>
+    <div class="path-body">
+      <div class="path-map" id="pathMap"></div>
+      <aside class="path-aside" id="pathAside" aria-label="Сегодня"></aside>
+    </div>
   </section>
 
   <!-- ===================== УРОК (полноэкранный) ===================== -->
@@ -185,10 +188,6 @@
       <button class="garden-primary-btn" id="lessonNextBtn" onclick="lessonNext()">Далее</button>
     </div>
 
-    <!-- Скрытые вкладки старой панели: нужны для совместимости switchPanelTab -->
-    <div hidden>
-      <button id="tabQuiz"></button><button id="tabTadabbur"></button><button id="tabDictionary"></button>
-    </div>
   </section>
 
   <!-- ===================== КОРАН ===================== -->
@@ -507,6 +506,6 @@
   <audio id="learnAudio" preload="none"></audio>
 
   <!-- Main JavaScript App Entry -->
-  <script type="module" src="app.js?v=12"></script>
+  <script type="module" src="app.js?v=13"></script>
 </body>
 </html>

@@ -2,8 +2,8 @@ import { quranData, tajweedRulesInfo } from './quranData.js';
 import { initHeartGuide } from './heartGuide.js';
 import { initQuranLearn } from './quranLearn.js';
 import { NAMAZ_RECITATIONS } from './namazData.js';
-import { initPrayerTimes, onPrayerScreenShown } from './prayerScreen.js';
-import { initQibla, updateQiblaForLocation } from './qibla.js';
+import { initPrayerTimes, onPrayerScreenShown, getPrayerSummary } from './prayerScreen.js';
+import { initQibla, updateQiblaForLocation, qiblaBearing, directionName } from './qibla.js';
 
 // ==========================================
 // Storage helpers
@@ -331,6 +331,13 @@ function toggleHifzBlindMode() {
 function initAudioPlayer() {
   const audio = elements.quranAudio;
 
+  // Перемотка с клавиатуры: стрелки ±5 секунд
+  elements.audioProgressTrack.addEventListener('keydown', (e) => {
+    if (!Number.isFinite(audio.duration) || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+    e.preventDefault();
+    audio.currentTime = Math.min(audio.duration, Math.max(0, audio.currentTime + (e.key === 'ArrowRight' ? 5 : -5)));
+  });
+
   audio.addEventListener('timeupdate', () => {
     if (!audio.duration) return;
     const progressPct = (audio.currentTime / audio.duration) * 100;
@@ -601,6 +608,57 @@ function renderPath() {
   map.innerHTML = svg + html + (allDone ? '<p class="path-finished">Все уроки пройдены. Повторяйте любой аят, нажав на него.</p>' : '');
   // Пройденные узлы можно открыть снова; заблокированные — нет
   map.querySelectorAll('.path-node.done').forEach(n => n.removeAttribute('disabled'));
+  renderPathAside(current, allDone);
+}
+
+// Боковая колонка «Сегодня» (видна на широких экранах)
+function renderPathAside(current, allDone) {
+  const aside = document.getElementById('pathAside');
+  if (!aside) return;
+  const ayah = quranData[current];
+  const steps = ['Слушание', 'Разбор слов', 'Квиз', 'Таддабур'];
+  const prayer = getPrayerSummary();
+  let prayerHtml = '';
+  if (prayer) {
+    const bearing = qiblaBearing(prayer.location.lat, prayer.location.lon);
+    prayerHtml = `
+      <section class="aside-card">
+        <span class="screen-kicker">Следующий намаз</span>
+        <div class="aside-prayer">
+          <div>
+            <span class="aside-prayer-name">${prayer.name}</span>
+            <span class="aside-prayer-time">${prayer.time}</span>
+            <span class="aside-muted">${prayer.left} · ${prayer.location.name}</span>
+          </div>
+          <svg class="aside-compass" viewBox="0 0 100 100" role="img" aria-label="Кибла: ${Math.round(bearing)}° от севера">
+            <circle cx="50" cy="50" r="46" fill="#0F2119" stroke="#2A4A3B" stroke-width="2"></circle>
+            <text x="50" y="17" text-anchor="middle" font-size="11" font-weight="700" fill="#E07A6A">С</text>
+            <g transform="rotate(${bearing.toFixed(1)} 50 50)">
+              <line x1="50" y1="50" x2="50" y2="22" stroke="#E2C275" stroke-width="3" stroke-linecap="round"></line>
+              <rect x="44" y="19" width="12" height="12" rx="2" fill="#E2C275"></rect>
+            </g>
+            <circle cx="50" cy="50" r="4" fill="#E2C275"></circle>
+          </svg>
+        </div>
+        <span class="aside-muted">Кибла ${Math.round(bearing)}°, ${directionName(bearing)}</span>
+        <a class="aside-link" href="#namaz">Время намаза и компас</a>
+      </section>`;
+  }
+  const words = quranData.flatMap(a => a.words.map(w => w.id)).filter(id => state.learnedWords.has(id)).length;
+  aside.innerHTML = `
+    <section class="aside-card">
+      <span class="screen-kicker">${allDone ? 'Повторение' : 'Урок дня'}</span>
+      <h2 class="aside-title">${ayah.surahNameRu}, аят ${ayah.ayahNum}</h2>
+      <p class="aside-ar" lang="ar" dir="rtl">${ayah.words.map(w => w.ar).join(' ')}</p>
+      <ol class="aside-steps">${steps.map((t, i) => `<li><span class="aside-step-num">${i + 1}</span>${t}</li>`).join('')}</ol>
+      <button class="garden-primary-btn" onclick="openLesson(${current})">${allDone ? 'Повторить урок' : 'Начать урок'}</button>
+    </section>
+    ${prayerHtml}
+    <section class="aside-card aside-stats">
+      <div><span class="aside-stat-num">${state.lessonsDone.size}/${quranData.length}</span><span class="aside-muted">уроков</span></div>
+      <div><span class="aside-stat-num">${words}</span><span class="aside-muted">${pluralWords(words)}</span></div>
+      <div><span class="aside-stat-num">${state.streakDays}</span><span class="aside-muted">${pluralDays(state.streakDays)} подряд</span></div>
+    </section>`;
 }
 
 function openLesson(index) {
