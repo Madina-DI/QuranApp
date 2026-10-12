@@ -1395,7 +1395,7 @@ body {
 .namaz-step-layout {
   display: flex;
   gap: 20px;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
 }
 
@@ -1429,6 +1429,67 @@ body {
 .posture-svg {
   width: 100%;
   height: 100%;
+}
+
+.posture-img {
+  width: 260px;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+  align-self: flex-start;
+  position: sticky;
+  top: 100px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 768px) {
+  .posture-img {
+    position: static;
+    width: 200px;
+    align-self: center;
+  }
+}
+
+.namaz-recitation {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+
+.namaz-recitation-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.namaz-recitation-title {
+  font-weight: 600;
+  color: var(--gold-accent);
+}
+
+.namaz-repeat-badge {
+  font-size: 0.75rem;
+  color: #000;
+  background: var(--primary-emerald);
+  border-radius: 999px;
+  padding: 2px 10px;
+  white-space: nowrap;
+}
+
+.namaz-recitation .namaz-ar-phrase {
+  font-size: 1.8rem;
+  line-height: 1.9;
+}
+
+.namaz-note {
+  font-size: 0.8rem;
+  color: var(--text-muted);
 }
 
 
