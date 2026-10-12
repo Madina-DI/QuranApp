@@ -544,3 +544,103 @@ body.in-lesson .tab-bar { display: none; }
 }
 .mode-toggles::-webkit-scrollbar { display: none; }
 .mode-toggles .btn-toggle { white-space: nowrap; flex: 0 0 auto; }
+
+/* ---------- Время намаза ---------- */
+.prayer-card { gap: 12px; margin-bottom: 16px; }
+.prayer-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.prayer-title { font-size: 1.6rem; font-weight: 600; color: var(--text-main); line-height: 1.15; }
+.prayer-date { color: var(--text-muted); font-size: 0.85rem; margin-top: 2px; }
+.prayer-date::first-letter { text-transform: uppercase; }
+.prayer-location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border-glass);
+  background: #0F2119;
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.prayer-location svg { color: var(--gold-accent); flex: 0 0 auto; }
+.prayer-location #prayerLocationName { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prayer-location-change { color: var(--gold-accent); font-size: 0.8rem; font-weight: 700; }
+.prayer-search { display: flex; flex-direction: column; gap: 8px; }
+.prayer-search[hidden] { display: none; }
+.prayer-city-input { min-height: 48px; height: 48px; padding: 10px 14px; resize: none; }
+.prayer-city-results { display: flex; flex-direction: column; gap: 4px; max-height: 320px; overflow-y: auto; }
+.prayer-city-option {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: #0F2119;
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+}
+.prayer-city-option:hover, .prayer-city-option:focus-visible { border-color: var(--gold-accent); outline: none; }
+.prayer-city-name { font-weight: 600; }
+.prayer-city-country { color: var(--text-muted); font-size: 0.8rem; text-align: right; }
+.prayer-city-note, .prayer-status { color: var(--text-muted); font-size: 0.82rem; }
+.prayer-status:empty { display: none; }
+
+.prayer-next {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 2px 12px;
+  padding: 16px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(63, 182, 139, 0.22), rgba(63, 182, 139, 0.06));
+  border: 1px solid rgba(63, 182, 139, 0.5);
+}
+.prayer-next:empty { display: none; }
+.prayer-next-label { grid-column: 1 / -1; color: var(--primary-emerald); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+.prayer-next-name { font-family: var(--font-heading); font-size: 1.9rem; font-weight: 600; color: var(--text-main); line-height: 1.1; }
+.prayer-next-time { color: var(--gold-accent); font-family: var(--font-sans); font-size: 1.5rem; font-weight: 700; margin-left: 6px; }
+.prayer-next-left { color: var(--text-muted); font-size: 0.88rem; font-weight: 600; }
+
+.prayer-list { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+.prayer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  padding: 0 14px;
+  border-radius: 12px;
+  font-size: 1rem;
+}
+.prayer-row + .prayer-row { border-top: 1px solid rgba(42, 74, 59, 0.6); }
+.prayer-row-name { font-weight: 600; }
+.prayer-row-time { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 1.1rem; }
+.prayer-row.is-sunrise { color: var(--text-muted); }
+.prayer-row.is-sunrise .prayer-row-time { font-weight: 500; }
+.prayer-row.is-current { background: rgba(226, 194, 117, 0.1); border-top-color: transparent; }
+.prayer-row.is-current .prayer-row-name::after { content: " · сейчас"; color: var(--gold-accent); font-size: 0.78rem; font-weight: 600; }
+.prayer-row.is-next .prayer-row-time { color: var(--primary-emerald); }
+
+.prayer-settings summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--gold-accent);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.prayer-setting { display: flex; flex-direction: column; gap: 6px; margin: 8px 0 12px; color: var(--text-muted); font-size: 0.82rem; }
+.prayer-setting .styled-select { width: 100%; }
+.qibla-location { color: var(--text-muted); font-size: 0.9rem; text-align: center; }
+.qibla-location span { color: var(--text-main); font-weight: 600; }

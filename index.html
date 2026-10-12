@@ -17,7 +17,7 @@
   
   <!-- App Stylesheet -->
   <link rel="stylesheet" href="styles.css?v=8">
-  <link rel="stylesheet" href="garden.css?v=2">
+  <link rel="stylesheet" href="garden.css?v=4">
 </head>
 <body>
 <div class="app-shell">
@@ -321,6 +321,45 @@
         <h1 class="screen-title">Молитва</h1>
         <p class="screen-sub">Омовение, положения намаза, молитвы и направление на Мекку</p>
       </header>
+    <section class="prayer-card card" id="prayerTimesCard" aria-labelledby="prayerTitle">
+      <div class="prayer-head">
+        <div>
+          <h2 class="prayer-title" id="prayerTitle">Время намаза</h2>
+          <p class="prayer-date" id="prayerDate"></p>
+        </div>
+        <button class="garden-icon-btn" onclick="detectPrayerLocation()" aria-label="Определить моё местоположение" title="Определить по геолокации">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3.5"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path><circle cx="12" cy="12" r="7.5"></circle></svg>
+        </button>
+      </div>
+      <button class="prayer-location" id="prayerLocationBtn" onclick="togglePrayerSearch(true)" aria-expanded="false" aria-controls="prayerSearchBox">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>
+        <span id="prayerLocationName">Определяем место…</span>
+        <span class="prayer-location-change">Изменить</span>
+      </button>
+      <div class="prayer-search" id="prayerSearchBox" hidden>
+        <input type="search" id="prayerCityInput" class="styled-textarea prayer-city-input" placeholder="Город в любой стране, например: Казань, London, Jakarta" autocomplete="off" aria-label="Поиск города">
+        <div class="prayer-city-results" id="prayerCityResults" role="listbox" aria-label="Найденные города"></div>
+      </div>
+      <p class="prayer-status" id="prayerStatus" role="status"></p>
+      <div class="prayer-next" id="prayerNext"></div>
+      <ul class="prayer-list" id="prayerList"></ul>
+      <details class="prayer-settings">
+        <summary>Метод расчёта</summary>
+        <label class="prayer-setting">
+          <span>Углы для фаджра и иши</span>
+          <select id="prayerMethodSelect" class="styled-select" onchange="setPrayerMethod(this.value)"></select>
+        </label>
+        <label class="prayer-setting">
+          <span>Время асра</span>
+          <select id="prayerAsrSelect" class="styled-select" onchange="setPrayerAsr(this.value)">
+            <option value="hanafi">Ханафитский мазхаб (тень ×2)</option>
+            <option value="standard">Шафиитский, маликитский, ханбалитский (тень ×1)</option>
+          </select>
+        </label>
+        <p class="guide-note">Время рассчитывается на устройстве по положению солнца и может отличаться от расписания вашей мечети на 1–3 минуты.</p>
+      </details>
+    </section>
+
     <section class="namaz-main-card card">
       <div class="namaz-banner-header">
         <div>
@@ -350,24 +389,13 @@
     </section>
     <section class="qibla-main-card card margin-top-lg">
         <div class="qibla-header text-center">
-          <h3>🧭 Направление на Мекку (Кибла)</h3>
-          <p class="qibla-subtitle">Авто-GPS определение или выбор города</p>
+          <h3>Направление на Мекку (кибла)</h3>
+          <p class="qibla-subtitle">Считается для того же места, что и время намаза</p>
         </div>
 
         <!-- City Selector -->
         <div class="qibla-controls margin-top-sm">
-          <select id="qiblaCitySelect" class="styled-select width-full" onchange="onQiblaCityChange(this.value)">
-            <option value="moscow">📍 Москва (164°)</option>
-            <option value="astana">📍 Астана (210°)</option>
-            <option value="almaty">📍 Алматы (224°)</option>
-            <option value="tashkent">📍 Ташкент (219°)</option>
-            <option value="bishkek">📍 Бишкек (223°)</option>
-            <option value="kazan">📍 Казань (178°)</option>
-            <option value="istanbul">📍 Стамбул (146°)</option>
-            <option value="baku">📍 Баку (202°)</option>
-            <option value="dubai">📍 Дубай (252°)</option>
-            <option value="auto">📡 Мое местоположение (GPS)</option>
-          </select>
+          <p class="qibla-location">Для: <span id="qiblaLocationName">—</span></p>
         </div>
 
         <!-- Compass Visual Ring -->
@@ -482,6 +510,6 @@
   <audio id="learnAudio" preload="none"></audio>
 
   <!-- Main JavaScript App Entry -->
-  <script type="module" src="app.js?v=9"></script>
+  <script type="module" src="app.js?v=10"></script>
 </body>
 </html>
