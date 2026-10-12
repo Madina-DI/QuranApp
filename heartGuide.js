@@ -198,16 +198,16 @@ function surahCardHtml(s, reasons) {
           <h4>${s.ru} <span class="guide-surah-meaning">«${s.meaning}»</span></h4>
           <span class="guide-surah-meta">${s.place} • ${s.ayahs} аятов</span>
         </div>
-        <div class="guide-surah-ar">${s.ar}</div>
+        <div class="guide-surah-ar" lang="ar" dir="rtl">${s.ar}</div>
       </div>
       ${tags ? `<div class="guide-tags">${tags}</div>` : ''}
       <p class="guide-surah-about"><strong>О чём сура:</strong> ${s.about}</p>
       <p class="guide-surah-gives"><strong>Что вы найдёте:</strong> ${s.gives}</p>
       <div class="guide-card-actions">
         <button class="btn-modal-action highlight guide-listen-btn" onclick="toggleSurahListen(${s.n})">
-          ${isPlaying ? '⏸ Пауза' : '🎧 Слушать суру'}
+          ${isPlaying ? '⏸ Пауза' : 'Слушать суру'}
         </button>
-        <button class="btn-modal-action" onclick="openSurahForLearning(${s.n})">📖 Читать и учить</button>
+        <button class="btn-modal-action" onclick="openSurahForLearning(${s.n})">Читать и учить</button>
       </div>
     </article>`;
 }
@@ -221,7 +221,7 @@ function renderBrowseList(filter) {
           <button class="guide-browse-item" onclick="showSurahGuide(${s.n})">
             <span class="guide-browse-num">${s.n}</span>
             <span class="guide-browse-name">${s.ru}<small>${s.meaning}</small></span>
-            <span class="guide-browse-ar">${s.ar}</span>
+            <span class="guide-browse-ar" lang="ar" dir="rtl">${s.ar}</span>
           </button>`)
         .join('')
     : '<p class="guide-empty">Сура не найдена</p>';
@@ -282,7 +282,7 @@ function toggleGuidePlay() {
 function toggleGuideLoop() {
   guideState.loop = !guideState.loop;
   el.audio.loop = guideState.loop;
-  el.btnLoop.textContent = guideState.loop ? '🔁 Повтор: вкл' : '🔁 Повтор: выкл';
+  el.btnLoop.textContent = guideState.loop ? 'Повтор: вкл' : 'Повтор: выкл';
   el.btnLoop.classList.toggle('active', guideState.loop);
 }
 
@@ -296,11 +296,11 @@ function cycleGuideSleep() {
     guideState.sleepTimerId = setTimeout(() => {
       el.audio.pause();
       guideState.sleepMinutes = 0;
-      el.btnSleep.textContent = '🌙 Таймер сна';
+      el.btnSleep.textContent = 'Таймер сна';
       el.btnSleep.classList.remove('active');
     }, guideState.sleepMinutes * 60 * 1000);
   }
-  el.btnSleep.textContent = guideState.sleepMinutes ? `🌙 ${guideState.sleepMinutes} мин` : '🌙 Таймер сна';
+  el.btnSleep.textContent = guideState.sleepMinutes ? `Сон: ${guideState.sleepMinutes} мин` : 'Таймер сна';
   el.btnSleep.classList.toggle('active', guideState.sleepMinutes > 0);
 }
 
@@ -317,7 +317,7 @@ function syncPlayerUi() {
   el.results.querySelectorAll('.guide-surah-card').forEach((card) => {
     const btn = card.querySelector('.guide-listen-btn');
     const isCurrent = Number(card.dataset.surah) === guideState.playingSurah;
-    btn.textContent = isCurrent && playing ? '⏸ Пауза' : '🎧 Слушать суру';
+    btn.textContent = isCurrent && playing ? '⏸ Пауза' : 'Слушать суру';
     card.classList.toggle('playing', isCurrent && playing);
   });
 }

@@ -173,8 +173,8 @@ function ayahHtml(n) {
     <div class="learn-ayah ${learned ? 'learned' : ''}" id="learnAyah${n}" data-ayah="${n}">
       <div class="learn-ayah-side">
         <span class="learn-ayah-num">${learnState.surah}:${n}</span>
-        <button class="learn-icon-btn" onclick="playLearnAyah(${n})" title="Слушать аят">▶</button>
-        <button class="learn-icon-btn learn-mark ${learned ? 'on' : ''}" onclick="toggleAyahLearned(${n})" title="Отметить как выученный">${learned ? '✓' : '☆'}</button>
+        <button class="learn-icon-btn" onclick="playLearnAyah(${n})" title="Слушать аят" aria-label="Слушать аят ${n}">▶</button>
+        <button class="learn-icon-btn learn-mark ${learned ? 'on' : ''}" onclick="toggleAyahLearned(${n})" title="Отметить как выученный" aria-label="${learned ? 'Аят выучен, снять отметку' : 'Отметить аят как выученный'}" aria-pressed="${learned}">${learned ? '✓' : '☆'}</button>
       </div>
       <div class="learn-ayah-body">
         <p class="learn-ar" dir="rtl" lang="ar">${arHtml}</p>
@@ -192,7 +192,7 @@ function hiddenWordsHtml(text, ayah, kind) {
       const key = `${ayah}-${kind}-${i}`;
       if (learnState.revealed.has(key)) return `<span class="learn-word revealed">${word}</span>`;
       const hint = learnState.hideLevel === 1 ? firstLetter(word, kind) : '';
-      return `<span class="learn-word hidden" onclick="revealLearnWord('${key}')" title="Нажмите, чтобы показать">${hint}<span class="learn-word-mask">${'•'.repeat(Math.min(6, Math.max(2, word.length - 1)))}</span></span>`;
+      return `<span class="learn-word hidden" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();revealLearnWord('${key}')}" onclick="revealLearnWord('${key}')" title="Нажмите, чтобы показать">${hint}<span class="learn-word-mask">${'•'.repeat(Math.min(6, Math.max(2, word.length - 1)))}</span></span>`;
     })
     .join(' ');
 }
@@ -259,17 +259,17 @@ function renderWriteBox() {
   const [, , ru] = learnState.verses[n - 1];
   el.writeBox.innerHTML = `
     <div class="learn-write-head">
-      <button class="btn-step-nav" onclick="learnPrev()">◄</button>
+      <button class="btn-step-nav" onclick="learnPrev()" aria-label="Предыдущий аят">◄</button>
       <span class="learn-ayah-num">Аят ${learnState.surah}:${n}</span>
-      <button class="btn-step-nav" onclick="learnNext()">►</button>
-      <button class="learn-icon-btn" onclick="playLearnAyah(${n})" title="Прослушать">▶</button>
+      <button class="btn-step-nav" onclick="learnNext()" aria-label="Следующий аят">►</button>
+      <button class="learn-icon-btn" onclick="playLearnAyah(${n})" title="Прослушать" aria-label="Прослушать аят">▶</button>
     </div>
     <p class="learn-ru">${ru}</p>
     <label class="journal-label" for="learnWriteInput">Напишите аят по памяти транскрипцией или арабскими буквами:</label>
     <textarea id="learnWriteInput" class="styled-textarea learn-write-input" placeholder="Например: Bismi Allahi alrrahmani alrraheemi"></textarea>
     <div class="learn-write-actions">
-      <button class="btn-primary" onclick="checkLearnWriting()">✔ Проверить</button>
-      <button class="btn-audio-setting" onclick="showLearnAnswer()">👁 Показать аят</button>
+      <button class="btn-primary" onclick="checkLearnWriting()">Проверить</button>
+      <button class="btn-audio-setting" onclick="showLearnAnswer()">Показать аят</button>
     </div>
     <div class="learn-write-result" id="learnWriteResult"></div>`;
 }
@@ -285,7 +285,7 @@ function checkLearnWriting() {
   const input = document.getElementById('learnWriteInput').value.trim();
   const result = document.getElementById('learnWriteResult');
   if (!input) {
-    result.innerHTML = '<p class="learn-hint">Сначала напишите аят 🙂</p>';
+    result.innerHTML = '<p class="learn-hint">Сначала напишите аят.</p>';
     return;
   }
   const [ar, tr] = learnState.verses[learnState.current - 1];
@@ -302,7 +302,7 @@ function checkLearnWriting() {
   const wordsHtml = expectedRaw
     .map((w, i) => `<span class="learn-check-word ${matches[i] ? 'ok' : 'miss'}">${w}</span>`)
     .join(' ');
-  const verdict = pct >= 90 ? '🌟 Отлично! Аят отмечен как выученный.' : pct >= 60 ? '👍 Хорошо, повторите ещё раз пропущенные слова.' : '📖 Послушайте аят ещё раз и попробуйте снова.';
+  const verdict = pct >= 90 ? 'Отлично! Аят отмечен как выученный.' : pct >= 60 ? 'Хорошо, повторите ещё раз пропущенные слова.' : 'Послушайте аят ещё раз и попробуйте снова.';
   result.innerHTML = `
     <div class="learn-score ${pct >= 90 ? 'good' : ''}">Точность: ${pct}% (${correct} из ${expected.length} слов)</div>
     <p class="${isArabic ? 'learn-ar' : 'learn-tr'}" ${isArabic ? 'dir="rtl" lang="ar"' : ''}>${wordsHtml}</p>
@@ -536,7 +536,7 @@ function stopPlayback() {
 
 function toggleLearnLoop() {
   learnState.loopRange = !learnState.loopRange;
-  el.btnLoop.textContent = learnState.loopRange ? '🔁 Круг: вкл' : '🔁 Круг: выкл';
+  el.btnLoop.textContent = learnState.loopRange ? 'Круг: вкл' : 'Круг: выкл';
   el.btnLoop.classList.toggle('active', learnState.loopRange);
 }
 
