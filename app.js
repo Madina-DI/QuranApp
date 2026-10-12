@@ -3,6 +3,7 @@ import { initHeartGuide } from './heartGuide.js';
 import { initQuranLearn } from './quranLearn.js';
 import { NAMAZ_RECITATIONS } from './namazData.js';
 import { initPrayerTimes, onPrayerScreenShown } from './prayerScreen.js';
+import { initQibla, updateQiblaForLocation } from './qibla.js';
 
 // ==========================================
 // Storage helpers
@@ -133,6 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateHeaderStats();
   initHeartGuide();
   initQuranLearn();
+  initQibla();
   initPrayerTimes(updateQiblaForLocation);
   renderPath();
   renderProfileStats();
@@ -822,54 +824,6 @@ function markWordLearned() {
   closeWordModal();
 }
 
-// ==========================================
-// QIBLA COMPASS CALCULATIONS & LOGIC
-// ==========================================
-const KAABA_LAT = 21.422487;
-const KAABA_LON = 39.826206;
-
-function calculateQiblaBearing(lat, lon) {
-  const phi1 = (lat * Math.PI) / 180;
-  const phi2 = (KAABA_LAT * Math.PI) / 180;
-  const deltaLambda = ((KAABA_LON - lon) * Math.PI) / 180;
-
-  const y = Math.sin(deltaLambda);
-  const x = Math.cos(phi1) * Math.tan(phi2) - Math.sin(phi1) * Math.cos(deltaLambda);
-  
-  let bearing = (Math.atan2(y, x) * 180) / Math.PI;
-  return (bearing + 360) % 360;
-}
-
-function calculateDistanceToKaaba(lat, lon) {
-  const R = 6371; // Earth radius in km
-  const dLat = ((KAABA_LAT - lat) * Math.PI) / 180;
-  const dLon = ((KAABA_LON - lon) * Math.PI) / 180;
-  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos((lat * Math.PI) / 180) * Math.cos((KAABA_LAT * Math.PI) / 180) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return Math.round(R * c);
-}
-
-function updateQiblaDisplay(angle, distance) {
-  const pointer = document.getElementById('qiblaPointer');
-  const angleVal = document.getElementById('qiblaAngleVal');
-  const distVal = document.getElementById('qiblaDistVal');
-
-  if (pointer) pointer.style.transform = `rotate(${angle}deg)`;
-  if (angleVal) angleVal.textContent = `${angle.toFixed(1)}°`;
-  if (distVal) distVal.textContent = `${distance.toLocaleString()} км`;
-}
-
-// Кибла считается для того же места, что и время намаза
-function updateQiblaForLocation(loc) {
-  if (!loc) return;
-  const angle = calculateQiblaBearing(loc.lat, loc.lon);
-  const dist = calculateDistanceToKaaba(loc.lat, loc.lon);
-  updateQiblaDisplay(angle, dist);
-  const label = document.getElementById('qiblaLocationName');
-  if (label) label.textContent = loc.name;
-}
 
 // ==========================================
 // NAMAZ & WUDU STEP-BY-STEP DATA & LOGIC

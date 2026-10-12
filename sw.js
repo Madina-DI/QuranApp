@@ -1,4 +1,4 @@
-const CACHE_NAME = 'albayan-v8';
+const CACHE_NAME = 'albayan-v9';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -7,6 +7,7 @@ const ASSETS_TO_CACHE = [
   './app.js',
   './prayerTimes.js',
   './prayerScreen.js',
+  './qibla.js',
   './quranData.js',
   './surahGuide.js',
   './heartGuide.js',
